@@ -11,12 +11,12 @@ func NewPayrollRepository() PayrollRepository {
 	return new(payrollRepository)
 }
 
-func (repo *payrollRepository) List() []model.Payroll {
-	return model.Payrolls
+func (repo *payrollRepository) List() ([]model.Payroll, error) {
+	return model.Payrolls, nil
 }
 
-func (repo *payrollRepository) getLastID() int64 {
-	payrolls := repo.List()
+func (repo *payrollRepository) getLastID() (int64, error) {
+	payrolls, err := repo.List()
 
 	var tempID int64
 	for _, payroll := range payrolls {
@@ -24,22 +24,28 @@ func (repo *payrollRepository) getLastID() int64 {
 			tempID = payroll.ID
 		}
 	}
-	return tempID
+	return tempID, err
 }
 
 func (repo *payrollRepository) Add(payroll *model.Payroll) (*model.Payroll, error) {
-	id := repo.getLastID()
+	id, err := repo.getLastID()
+	if err != nil {
+		return &model.Payroll{}, nil
+	}
 
-	newPayroll := *payroll
+	newPayroll := payroll
 	newPayroll.ID = id + 1
 
-	model.Payrolls = append(model.Payrolls, newPayroll)
+	model.Payrolls = append(model.Payrolls, *newPayroll)
 
-	return &newPayroll, nil
+	return newPayroll, nil
 }
 
 func (repo *payrollRepository) getIndexByID(id int64) (int, error) {
-	payrolls := repo.List()
+	payrolls, err := repo.List()
+	if err != nil {
+		return -1, err
+	}
 
 	for i, payroll := range payrolls {
 		if id == payroll.ID {
@@ -51,9 +57,12 @@ func (repo *payrollRepository) getIndexByID(id int64) (int, error) {
 }
 
 func (repo *payrollRepository) Detail(id int64) (*model.Payroll, error) {
-	payrolls := repo.List()
-	index, err := repo.getIndexByID(id)
+	payrolls, err := repo.List()
+	if err != nil {
+		return &model.Payroll{}, nil
+	}
 
+	index, err := repo.getIndexByID(id)
 	if err != nil {
 		return &model.Payroll{}, err
 	}

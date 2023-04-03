@@ -15,6 +15,6 @@ func NewSalaryUsecase(salaryRepo repository.SalaryRepository) SalaryUsecase {
 	}
 }
 
-func (uc *salaryUsecase) List() []model.SalaryMatrix {
+func (uc *salaryUsecase) List() ([]model.SalaryMatrix, error) {
 	return uc.SalaryRepo.List()
 }

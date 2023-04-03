@@ -15,7 +15,7 @@ func NewEmployeeUsecase(employeeRepo repository.EmployeeRepository) EmployeeUsec
 	}
 }
 
-func (uc *employeeUsecase) List() []model.Employee {
+func (uc *employeeUsecase) List() ([]model.Employee, error) {
 	return uc.EmployeeRepo.List()
 }
 

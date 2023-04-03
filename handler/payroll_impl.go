@@ -22,31 +22,35 @@ func NewPayrollHandler(
 func (handler *payrollHandler) List() {
 	helper.ClearTerminal()
 
-	fmt.Printf("|--------|---------------|---------------|-------------------|-------------|\n")
-	fmt.Printf("| ID\t | Basic Salary\t | Pay Cut\t | Additional Salary | Employee ID |\n")
-	fmt.Printf("|--------|---------------|---------------|-------------------|-------------|\n")
+	payrolls, err := handler.PayrollUC.List()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("|--------|---------------|---------------|-------------------|-------------|\n")
+		fmt.Printf("| ID\t | Basic Salary\t | Pay Cut\t | Additional Salary | Employee ID |\n")
+		fmt.Printf("|--------|---------------|---------------|-------------------|-------------|\n")
 
-	payrolls := handler.PayrollUC.List()
-	for _, payroll := range payrolls {
-		if payroll.PayCut == 0 {
-			fmt.Printf(
-				"| %d\t | %d\t | %d\t\t | %d\t     | %d\t   |\n",
-				payroll.ID, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.Employee.ID,
-			)
-		} else if payroll.AdditionalSalary == 0 {
-			fmt.Printf(
-				"| %d\t | %d\t | %d\t | %d\t\t     | %d\t   |\n",
-				payroll.ID, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.Employee.ID,
-			)
-		} else {
-			fmt.Printf(
-				"| %d\t | %d\t | %d\t | %d\t     | %d\t   |\n",
-				payroll.ID, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.Employee.ID,
-			)
+		for _, payroll := range payrolls {
+			if payroll.PayCut == 0 {
+				fmt.Printf(
+					"| %d\t | %d\t | %d\t\t | %d\t     | %d\t   |\n",
+					payroll.ID, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.Employee.ID,
+				)
+			} else if payroll.AdditionalSalary == 0 {
+				fmt.Printf(
+					"| %d\t | %d\t | %d\t | %d\t\t     | %d\t   |\n",
+					payroll.ID, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.Employee.ID,
+				)
+			} else {
+				fmt.Printf(
+					"| %d\t | %d\t | %d\t | %d\t     | %d\t   |\n",
+					payroll.ID, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.Employee.ID,
+				)
+			}
+
 		}
-
+		fmt.Printf("|--------|---------------|---------------|-------------------|-------------|\n")
 	}
-	fmt.Printf("|--------|---------------|---------------|-------------------|-------------|\n")
 }
 
 func (handler *payrollHandler) Add() {

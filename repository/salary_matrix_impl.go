@@ -10,6 +10,6 @@ func NewSalaryRepository() SalaryRepository {
 	return new(salaryRepository)
 }
 
-func (repo *salaryRepository) List() []model.SalaryMatrix {
-	return model.SalaryMatrices
+func (repo *salaryRepository) List() ([]model.SalaryMatrix, error) {
+	return model.SalaryMatrices, nil
 }

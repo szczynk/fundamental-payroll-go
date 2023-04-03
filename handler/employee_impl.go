@@ -21,19 +21,25 @@ func NewEmployeeHandler(employeeUC usecase.EmployeeUsecase) EmployeeHandler {
 
 func (handler *employeeHandler) List() {
 	helper.ClearTerminal()
-	fmt.Printf("|--------|-----------------------|---------------|-------|---------------|\n")
-	fmt.Printf("| ID\t | Nama\t\t\t | Gender\t | Grade | Married\t |\n")
-	fmt.Printf("|--------|-----------------------|---------------|-------|---------------|\n")
 
-	employees := handler.EmployeeUC.List()
-	for _, employee := range employees {
-		if employee.Married {
-			fmt.Printf("| %d\t | %s\t | %s\t | %d\t | %t\t\t |\n", employee.ID, employee.Name, employee.Gender, employee.Grade, employee.Married)
-		} else {
-			fmt.Printf("| %d\t | %s\t | %s\t | %d\t | %t\t |\n", employee.ID, employee.Name, employee.Gender, employee.Grade, employee.Married)
+	employees, err := handler.EmployeeUC.List()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("|--------|-----------------------|---------------|-------|---------------|\n")
+		fmt.Printf("| ID\t | Nama\t\t\t | Gender\t | Grade | Married\t |\n")
+		fmt.Printf("|--------|-----------------------|---------------|-------|---------------|\n")
+
+		for _, employee := range employees {
+			if employee.Married {
+				fmt.Printf("| %d\t | %s\t | %s\t | %d\t | %t\t\t |\n", employee.ID, employee.Name, employee.Gender, employee.Grade, employee.Married)
+			} else {
+				fmt.Printf("| %d\t | %s\t | %s\t | %d\t | %t\t |\n", employee.ID, employee.Name, employee.Gender, employee.Grade, employee.Married)
+			}
 		}
+
+		fmt.Printf("|--------|-----------------------|---------------|-------|---------------|\n")
 	}
-	fmt.Printf("|--------|-----------------------|---------------|-------|---------------|\n")
 }
 
 func (handler *employeeHandler) Add() {
@@ -60,6 +66,8 @@ func (handler *employeeHandler) Add() {
 	fmt.Print("Grade = ")
 	var grade int8
 	fmt.Scanln(&grade)
+	// ? are we using salaryMatrix usecase or direct hit?
+	// ? currently using direct hit
 	validGrades := []int8{1, 2, 3}
 	var isValidGrade bool
 	for _, g := range validGrades {

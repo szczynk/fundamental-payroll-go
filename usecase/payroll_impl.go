@@ -24,7 +24,7 @@ func NewPayrollUsecase(
 	}
 }
 
-func (uc *payrollUsecase) List() []model.Payroll {
+func (uc *payrollUsecase) List() ([]model.Payroll, error) {
 	return uc.PayrollRepo.List()
 }
 
@@ -40,14 +40,19 @@ func (uc *payrollUsecase) Add(req *model.PayrollRequest) (*model.Payroll, error)
 		additionalSalary int64
 	)
 
-	for _, salaryMatrix := range uc.SalaryRepo.List() {
-		if salaryMatrix.Grade == employee.Grade {
-			basicSalary = salaryMatrix.BasicSalary
-			payCut = salaryMatrix.PayCut * req.TotalHariTidakMasuk
+	salaries, err := uc.SalaryRepo.List()
+	if err != nil {
+		return &model.Payroll{}, err
+	}
 
-			additionalSalary = salaryMatrix.Allowance * req.TotalHariMasuk
+	for _, salary := range salaries {
+		if salary.Grade == employee.Grade {
+			basicSalary = salary.BasicSalary
+			payCut = salary.PayCut * req.TotalHariTidakMasuk
+
+			additionalSalary = salary.Allowance * req.TotalHariMasuk
 			if strings.Contains(strings.ToLower(employee.Gender), "laki-laki") && employee.Married {
-				additionalSalary += salaryMatrix.HoF
+				additionalSalary += salary.HoF
 			}
 		}
 	}
