@@ -1,17 +1,18 @@
 package model
 
 type Payroll struct {
-	ID               int64
-	BasicSalary      int64
-	PayCut           int64
-	AdditionalSalary int64
-	Employee         Employee
+	ID               int64    `json:"id"`
+	BasicSalary      int64    `json:"basic_salary"`
+	PayCut           int64    `json:"pay_cut"`
+	AdditionalSalary int64    `json:"additional_salary"`
+	Employee         Employee `json:"employee"`
+	EmployeeID       int64    `json:"employee_id"`
 }
 
 type PayrollRequest struct {
-	EmployeeID          int64
-	TotalHariMasuk      int64
-	TotalHariTidakMasuk int64
+	EmployeeID          int64 `json:"employee_id"`
+	TotalHariMasuk      int64 `json:"total_hari_masuk"`
+	TotalHariTidakMasuk int64 `json:"total_hari_tidak_masuk"`
 }
 
 var Payrolls []Payroll

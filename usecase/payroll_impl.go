@@ -62,6 +62,7 @@ func (uc *payrollUsecase) Add(req *model.PayrollRequest) (*model.Payroll, error)
 		PayCut:           payCut,
 		AdditionalSalary: additionalSalary,
 		Employee:         *employee,
+		EmployeeID:       req.EmployeeID,
 	}
 
 	return uc.PayrollRepo.Add(payroll)

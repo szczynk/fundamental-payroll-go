@@ -58,6 +58,11 @@ func (handler *employeeHandler) Add() {
 	var gender string
 	fmt.Scanln(&gender)
 	gender = strings.ToLower(strings.TrimSpace(gender))
+	if gender == "l" {
+		gender = "laki-laki"
+	} else if gender == "p" {
+		gender = "perempuan"
+	}
 	if gender != "laki-laki" && gender != "perempuan" {
 		fmt.Println("Gender yang dimasukkan tidak valid")
 		return

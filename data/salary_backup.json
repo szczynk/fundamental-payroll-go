@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "grade": 1,
+    "basic_salary": 5000000,
+    "pay_cut": 100000,
+    "allowance": 150000,
+    "head_of_family": 1000000
+  },
+  {
+    "id": 2,
+    "grade": 2,
+    "basic_salary": 9000000,
+    "pay_cut": 200000,
+    "allowance": 300000,
+    "head_of_family": 2000000
+  },
+  {
+    "id": 3,
+    "grade": 3,
+    "basic_salary": 15000000,
+    "pay_cut": 400000,
+    "allowance": 600000,
+    "head_of_family": 3000000
+  }
+]

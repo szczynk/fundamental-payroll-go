@@ -1,12 +1,12 @@
 package model
 
 type SalaryMatrix struct {
-	ID          int64
-	Grade       int8
-	BasicSalary int64
-	PayCut      int64
-	Allowance   int64
-	HoF         int64
+	ID          int64 `json:"id"`
+	Grade       int8  `json:"grade"`
+	BasicSalary int64 `json:"basic_salary"`
+	PayCut      int64 `json:"pay_cut"`
+	Allowance   int64 `json:"allowance"`
+	HoF         int64 `json:"head_of_family"`
 }
 
 var SalaryMatrices = []SalaryMatrix{
