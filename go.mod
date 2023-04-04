@@ -3,7 +3,6 @@ module fundamental-payroll-go
 go 1.20
 
 require (
-	github.com/go-sql-driver/mysql v1.7.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/spf13/viper v1.15.0
 )
