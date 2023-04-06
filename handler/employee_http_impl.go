@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
 	"net/http"
@@ -43,7 +44,7 @@ func (handler *employeeHTTPHandler) Add(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if employeeRequest.Name == "" {
-		http.Error(w, "Name yang dimasukkan tidak valid", http.StatusBadRequest)
+		http.Error(w, helper.ErrEmployeeNameNotValid, http.StatusBadRequest)
 		return
 	}
 
@@ -54,28 +55,23 @@ func (handler *employeeHTTPHandler) Add(w http.ResponseWriter, r *http.Request) 
 		gender = "perempuan"
 	}
 	if gender != "laki-laki" && gender != "perempuan" {
-		http.Error(w, "Gender yang dimasukkan tidak valid", http.StatusBadRequest)
+		http.Error(w, helper.ErrEmployeeGenderNotValid, http.StatusBadRequest)
 		return
 	}
+	employeeRequest.Gender = gender
 
-	// ? are we using salaryMatrix usecase or direct hit?
-	// ? currently using direct hit
-	validGrades := []int8{1, 2, 3}
-	var isValidGrade bool
-	for _, g := range validGrades {
-		if employeeRequest.Grade == g {
-			isValidGrade = true
-			break
-		}
-	}
-	if !isValidGrade {
-		http.Error(w, "Grade yang dimasukkan tidak valid", http.StatusBadRequest)
+	if employeeRequest.Grade <= 0 {
+		http.Error(w, helper.ErrEmployeeGradeNotValid, http.StatusBadRequest)
 		return
 	}
 
 	employee, err := handler.EmployeeUC.Add(&employeeRequest)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if appErr, ok := err.(*helper.AppError); ok {
+			http.Error(w, appErr.Message, http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

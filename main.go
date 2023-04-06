@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"fundamental-payroll-go/config"
 	"fundamental-payroll-go/config/db"
 	"fundamental-payroll-go/handler"
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/repository"
 	"fundamental-payroll-go/usecase"
 	"log"
@@ -41,22 +43,24 @@ func createUsecase(config *config.Config) (
 	usecase.PayrollUsecase,
 ) {
 	var (
+		DB           *sql.DB
 		employeeRepo repository.EmployeeRepository
 		salaryRepo   repository.SalaryRepository
 		payrollRepo  repository.PayrollRepository
+		err          error
 	)
 
 	switch config.Storage {
 	case "sql":
 		switch config.Database.Driver {
 		case "pgx":
-			db, err := db.NewPgxDatabase(config)
+			DB, err = db.NewPgxDatabase(config)
 			if err != nil {
 				log.Fatal(err)
 			}
-			employeeRepo = repository.NewEmployeePgxRepository(db)
-			salaryRepo = repository.NewSalaryPgxRepository(db)
-			payrollRepo = repository.NewPayrollPgxRepository(db)
+			employeeRepo = repository.NewEmployeePgxRepository(DB)
+			salaryRepo = repository.NewSalaryPgxRepository(DB)
+			payrollRepo = repository.NewPayrollPgxRepository(DB)
 		default:
 			log.Fatalln("database driver not existed")
 		}
@@ -69,7 +73,7 @@ func createUsecase(config *config.Config) (
 		payrollRepo = repository.NewPayrollRepository()
 		salaryRepo = repository.NewSalaryRepository()
 	}
-	return usecase.NewEmployeeUsecase(employeeRepo),
+	return usecase.NewEmployeeUsecase(employeeRepo, salaryRepo),
 		usecase.NewSalaryUsecase(salaryRepo),
 		usecase.NewPayrollUsecase(employeeRepo, payrollRepo, salaryRepo)
 }
@@ -90,7 +94,7 @@ func NewServer(
 		case "POST":
 			employeeHandler.Add(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
 		}
 	})
@@ -103,7 +107,7 @@ func NewServer(
 		case "POST":
 			payrollHandler.Add(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
 		}
 	})
@@ -114,7 +118,7 @@ func NewServer(
 		case "GET":
 			payrollHandler.Detail(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
 		}
 	})
@@ -125,7 +129,7 @@ func NewServer(
 		case "GET":
 			salaryHandler.List(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
 		}
 	})

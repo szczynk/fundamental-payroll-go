@@ -20,7 +20,10 @@ func NewEmployeeHandler(employeeUC usecase.EmployeeUsecase) EmployeeHandler {
 }
 
 func (handler *employeeHandler) List() {
-	helper.ClearTerminal()
+	err := helper.ClearTerminal()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	employees, err := handler.EmployeeUC.List()
 	if err != nil {
@@ -43,14 +46,18 @@ func (handler *employeeHandler) List() {
 }
 
 func (handler *employeeHandler) Add() {
-	helper.ClearTerminal()
+	err := helper.ClearTerminal()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	fmt.Println("Add new employee")
 
 	fmt.Print("Name = ")
 	var name string
 	fmt.Scanln(&name)
 	if name == "" {
-		fmt.Println("Name yang dimasukkan tidak valid")
+		fmt.Println(helper.ErrEmployeeNameNotValid)
 		return
 	}
 
@@ -64,25 +71,15 @@ func (handler *employeeHandler) Add() {
 		gender = "perempuan"
 	}
 	if gender != "laki-laki" && gender != "perempuan" {
-		fmt.Println("Gender yang dimasukkan tidak valid")
+		fmt.Println(helper.ErrEmployeeGenderNotValid)
 		return
 	}
 
 	fmt.Print("Grade = ")
 	var grade int8
 	fmt.Scanln(&grade)
-	// ? are we using salaryMatrix usecase or direct hit?
-	// ? currently using direct hit
-	validGrades := []int8{1, 2, 3}
-	var isValidGrade bool
-	for _, g := range validGrades {
-		if grade == g {
-			isValidGrade = true
-			break
-		}
-	}
-	if !isValidGrade {
-		fmt.Println("Grade yang dimasukkan tidak valid")
+	if grade <= 0 {
+		fmt.Println(helper.ErrEmployeeGradeNotValid)
 		return
 	}
 

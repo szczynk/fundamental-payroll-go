@@ -2,7 +2,7 @@ package repository
 
 import (
 	"encoding/json"
-	"errors"
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/model"
 	"os"
 )
@@ -69,7 +69,7 @@ func (repo *employeeJsonRepository) getLastID() (int64, error) {
 func (repo *employeeJsonRepository) Add(employee *model.Employee) (*model.Employee, error) {
 	id, err := repo.getLastID()
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	newEmployee := employee
@@ -79,7 +79,7 @@ func (repo *employeeJsonRepository) Add(employee *model.Employee) (*model.Employ
 
 	err = repo.encodeJSON(employeeJsonFile, &model.Employees)
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	return newEmployee, nil
@@ -97,18 +97,18 @@ func (repo *employeeJsonRepository) getIndexByID(id int64) (int, error) {
 		}
 	}
 
-	return -1, errors.New("ID tidak ditemukan")
+	return -1, helper.NewAppError(helper.ErrIdNotFound)
 }
 
 func (repo *employeeJsonRepository) Detail(id int64) (*model.Employee, error) {
 	employees, err := repo.List()
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	index, err := repo.getIndexByID(id)
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	employee := employees[index]

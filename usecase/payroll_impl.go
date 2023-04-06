@@ -31,7 +31,7 @@ func (uc *payrollUsecase) List() ([]model.Payroll, error) {
 func (uc *payrollUsecase) Add(req *model.PayrollRequest) (*model.Payroll, error) {
 	employee, err := uc.EmployeeRepo.Detail(req.EmployeeID)
 	if err != nil {
-		return &model.Payroll{}, err
+		return nil, err
 	}
 
 	var (
@@ -42,7 +42,7 @@ func (uc *payrollUsecase) Add(req *model.PayrollRequest) (*model.Payroll, error)
 
 	salaries, err := uc.SalaryRepo.List()
 	if err != nil {
-		return &model.Payroll{}, err
+		return nil, err
 	}
 
 	for _, salary := range salaries {

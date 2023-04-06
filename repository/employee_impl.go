@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"errors"
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/model"
 )
 
@@ -30,7 +30,7 @@ func (repo *employeeRepository) getLastID() (int64, error) {
 func (repo *employeeRepository) Add(employee *model.Employee) (*model.Employee, error) {
 	id, err := repo.getLastID()
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	newEmployee := *employee
@@ -53,18 +53,18 @@ func (repo *employeeRepository) getIndexByID(id int64) (int, error) {
 		}
 	}
 
-	return -1, errors.New("ID tidak ditemukan")
+	return -1, helper.NewAppError(helper.ErrIdNotFound)
 }
 
 func (repo *employeeRepository) Detail(id int64) (*model.Employee, error) {
 	employees, err := repo.List()
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	index, err := repo.getIndexByID(id)
 	if err != nil {
-		return &model.Employee{}, err
+		return nil, err
 	}
 
 	employee := employees[index]

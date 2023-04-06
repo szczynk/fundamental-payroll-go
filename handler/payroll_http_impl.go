@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
 	"net/http"
@@ -44,8 +45,18 @@ func (handler *payrollHTTPHandler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if payrollRequest.EmployeeID == 0 {
-		http.Error(w, "Employee ID yang dimasukkan tidak valid", http.StatusBadRequest)
+	if payrollRequest.EmployeeID <= 0 {
+		http.Error(w, helper.ErrEmployeeIdNotValid, http.StatusBadRequest)
+		return
+	}
+
+	if payrollRequest.TotalHariMasuk < 0 {
+		http.Error(w, helper.ErrPresentDayNotValid, http.StatusBadRequest)
+		return
+	}
+
+	if payrollRequest.TotalHariTidakMasuk < 0 {
+		http.Error(w, helper.ErrAbsentDayNotValid, http.StatusBadRequest)
 		return
 	}
 
@@ -66,18 +77,18 @@ func (handler *payrollHTTPHandler) Add(w http.ResponseWriter, r *http.Request) {
 func (handler *payrollHTTPHandler) Detail(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/payrolls/")
 	if idStr == "" {
-		http.Error(w, "Invalid ID.", http.StatusBadRequest)
+		http.Error(w, helper.ErrPayrollIdNotValid, http.StatusBadRequest)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid ID.", http.StatusBadRequest)
+		http.Error(w, helper.ErrPayrollIdNotValid, http.StatusBadRequest)
 		return
 	}
 
-	if id == 0 {
-		http.Error(w, "Invalid ID.", http.StatusBadRequest)
+	if id <= 0 {
+		http.Error(w, helper.ErrPayrollIdNotValid, http.StatusBadRequest)
 		return
 	}
 

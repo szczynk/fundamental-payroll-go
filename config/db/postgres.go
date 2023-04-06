@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"fundamental-payroll-go/config"
+	"fundamental-payroll-go/helper"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -11,7 +11,7 @@ import (
 
 func NewPgxDatabase(cfg *config.Config) (*sql.DB, error) {
 	if cfg.Database.URL == "" {
-		return nil, errors.New("database URL not existed")
+		return nil, helper.NewAppError(helper.ErrDbUrlNotExist)
 	}
 
 	db, err := sql.Open(cfg.Database.Driver, cfg.Database.URL)
@@ -23,6 +23,10 @@ func NewPgxDatabase(cfg *config.Config) (*sql.DB, error) {
 	db.SetMaxOpenConns(100)
 	db.SetConnMaxIdleTime(5 * time.Minute)
 	db.SetConnMaxLifetime(60 * time.Minute)
+
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
 
 	return db, nil
 }

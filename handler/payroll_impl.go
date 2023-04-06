@@ -20,7 +20,10 @@ func NewPayrollHandler(
 }
 
 func (handler *payrollHandler) List() {
-	helper.ClearTerminal()
+	err := helper.ClearTerminal()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	payrolls, err := handler.PayrollUC.List()
 	if err != nil {
@@ -54,25 +57,36 @@ func (handler *payrollHandler) List() {
 }
 
 func (handler *payrollHandler) Add() {
-	helper.ClearTerminal()
+	err := helper.ClearTerminal()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Println("Add new payroll")
 
 	fmt.Print("Employee ID = ")
 	var employeeID int64
 	fmt.Scanln(&employeeID)
-	if employeeID == 0 {
-		fmt.Println("Employee ID yang dimasukkan tidak valid")
+	if employeeID <= 0 {
+		fmt.Println(helper.ErrEmployeeIdNotValid)
 		return
 	}
 
 	fmt.Print("TotalHariMasuk = ")
 	var totalHariMasuk int64
 	fmt.Scanln(&totalHariMasuk)
+	if totalHariMasuk < 0 {
+		fmt.Println(helper.ErrPresentDayNotValid)
+		return
+	}
 
 	fmt.Print("TotalHariTidakMasuk = ")
 	var totalHariTidakMasuk int64
 	fmt.Scanln(&totalHariTidakMasuk)
+	if totalHariTidakMasuk < 0 {
+		fmt.Println(helper.ErrAbsentDayNotValid)
+		return
+	}
 
 	payrollRequest := &model.PayrollRequest{
 		EmployeeID:          employeeID,
@@ -127,15 +141,18 @@ func (handler *payrollHandler) Add() {
 }
 
 func (handler *payrollHandler) Detail() {
-	helper.ClearTerminal()
+	err := helper.ClearTerminal()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Println("Payroll Detail")
 
 	fmt.Print("Payroll ID = ")
 	var payrollID int64
 	fmt.Scanln(&payrollID)
-	if payrollID == 0 {
-		fmt.Println("Payroll ID yang dimasukkan tidak valid")
+	if payrollID <= 0 {
+		fmt.Println(helper.ErrPayrollIdNotValid)
 		return
 	}
 

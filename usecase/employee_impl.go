@@ -1,17 +1,23 @@
 package usecase
 
 import (
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/repository"
 )
 
 type employeeUsecase struct {
 	EmployeeRepo repository.EmployeeRepository
+	SalaryRepo   repository.SalaryRepository
 }
 
-func NewEmployeeUsecase(employeeRepo repository.EmployeeRepository) EmployeeUsecase {
+func NewEmployeeUsecase(
+	employeeRepo repository.EmployeeRepository,
+	salaryRepo repository.SalaryRepository,
+) EmployeeUsecase {
 	return &employeeUsecase{
 		EmployeeRepo: employeeRepo,
+		SalaryRepo:   salaryRepo,
 	}
 }
 
@@ -20,6 +26,22 @@ func (uc *employeeUsecase) List() ([]model.Employee, error) {
 }
 
 func (uc *employeeUsecase) Add(req *model.EmployeeRequest) (*model.Employee, error) {
+	salaries, err := uc.SalaryRepo.List()
+	if err != nil {
+		return nil, err
+	}
+
+	var isValidGrade bool
+	for _, salary := range salaries {
+		if req.Grade == salary.Grade {
+			isValidGrade = true
+			break
+		}
+	}
+	if !isValidGrade {
+		return nil, helper.NewAppError(helper.ErrEmployeeGradeNotValid)
+	}
+
 	employee := &model.Employee{
 		Name:    req.Name,
 		Gender:  req.Gender,

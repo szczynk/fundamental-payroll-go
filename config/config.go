@@ -1,7 +1,7 @@
 package config
 
 import (
-	"errors"
+	"fundamental-payroll-go/helper"
 
 	"github.com/spf13/viper"
 )
@@ -24,7 +24,7 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		_, ok := err.(viper.ConfigFileNotFoundError)
 		if ok {
-			return nil, errors.New(".env tidak ditemukan")
+			return nil, helper.NewAppError(helper.ErrEnvNotFound)
 		}
 		return nil, err
 	}

@@ -17,7 +17,10 @@ func NewSalaryHandler(salaryUC usecase.SalaryUsecase) SalaryHandler {
 }
 
 func (handler *salaryHandler) List() {
-	helper.ClearTerminal()
+	err := helper.ClearTerminal()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	salaries, err := handler.SalaryUC.List()
 	if err != nil {
