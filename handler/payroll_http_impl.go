@@ -83,7 +83,7 @@ func (handler *payrollHTTPHandler) Detail(w http.ResponseWriter, r *http.Request
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, helper.ErrPayrollIdNotValid, http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
