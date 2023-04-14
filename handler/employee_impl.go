@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
 	"strconv"
@@ -57,7 +58,7 @@ func (handler *employeeHandler) Add() {
 	var name string
 	fmt.Scanln(&name)
 	if name == "" {
-		fmt.Println(helper.ErrEmployeeNameNotValid)
+		fmt.Println(apperrors.ErrEmployeeNameNotValid)
 		return
 	}
 
@@ -71,7 +72,7 @@ func (handler *employeeHandler) Add() {
 		gender = "perempuan"
 	}
 	if gender != "laki-laki" && gender != "perempuan" {
-		fmt.Println(helper.ErrEmployeeGenderNotValid)
+		fmt.Println(apperrors.ErrEmployeeGenderNotValid)
 		return
 	}
 
@@ -79,7 +80,7 @@ func (handler *employeeHandler) Add() {
 	var grade int8
 	fmt.Scanln(&grade)
 	if grade <= 0 {
-		fmt.Println(helper.ErrEmployeeGradeNotValid)
+		fmt.Println(apperrors.ErrEmployeeGradeNotValid)
 		return
 	}
 

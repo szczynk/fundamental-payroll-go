@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
 )
@@ -68,7 +69,7 @@ func (handler *payrollHandler) Add() {
 	var employeeID int64
 	fmt.Scanln(&employeeID)
 	if employeeID <= 0 {
-		fmt.Println(helper.ErrEmployeeIdNotValid)
+		fmt.Println(apperrors.ErrEmployeeIdNotValid)
 		return
 	}
 
@@ -76,7 +77,7 @@ func (handler *payrollHandler) Add() {
 	var totalHariMasuk int64
 	fmt.Scanln(&totalHariMasuk)
 	if totalHariMasuk < 0 {
-		fmt.Println(helper.ErrPresentDayNotValid)
+		fmt.Println(apperrors.ErrPresentDayNotValid)
 		return
 	}
 
@@ -84,7 +85,7 @@ func (handler *payrollHandler) Add() {
 	var totalHariTidakMasuk int64
 	fmt.Scanln(&totalHariTidakMasuk)
 	if totalHariTidakMasuk < 0 {
-		fmt.Println(helper.ErrAbsentDayNotValid)
+		fmt.Println(apperrors.ErrAbsentDayNotValid)
 		return
 	}
 
@@ -152,7 +153,7 @@ func (handler *payrollHandler) Detail() {
 	var payrollID int64
 	fmt.Scanln(&payrollID)
 	if payrollID <= 0 {
-		fmt.Println(helper.ErrPayrollIdNotValid)
+		fmt.Println(apperrors.ErrPayrollIdNotValid)
 		return
 	}
 

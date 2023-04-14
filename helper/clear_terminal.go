@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"fundamental-payroll-go/helper/apperrors"
 	"os"
 	"os/exec"
 	"runtime"
@@ -22,7 +23,7 @@ func ClearTerminal() error {
 		cmd.Stdout = os.Stdout
 		err = cmd.Run()
 	default:
-		err = NewAppError(ErrPlatformNotSupported)
+		err = apperrors.New(apperrors.ErrPlatformNotSupported)
 	}
 	return err
 }

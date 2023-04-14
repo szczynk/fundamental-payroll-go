@@ -2,7 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
+	"fundamental-payroll-go/helper/logger"
+	"fundamental-payroll-go/helper/response"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
 	"net/http"
@@ -11,13 +13,13 @@ import (
 )
 
 type payrollHTTPHandler struct {
+	Logger    *logger.Logger
 	PayrollUC usecase.PayrollUsecase
 }
 
-func NewPayrollHTTPHandler(
-	payrollUC usecase.PayrollUsecase,
-) PayrollHTTPHandler {
+func NewPayrollHTTPHandler(l *logger.Logger, payrollUC usecase.PayrollUsecase) PayrollHTTPHandler {
 	return &payrollHTTPHandler{
+		Logger:    l,
 		PayrollUC: payrollUC,
 	}
 }
@@ -25,14 +27,15 @@ func NewPayrollHTTPHandler(
 func (handler *payrollHTTPHandler) List(w http.ResponseWriter, r *http.Request) {
 	payrolls, err := handler.PayrollUC.List()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handler.Logger.Error().Err(err).Msg("")
+		_ = response.NewJson(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(&payrolls)
+	err = response.NewJson(w, http.StatusOK, http.StatusText(http.StatusOK), payrolls)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handler.Logger.Error().Err(err).Msg("")
+		_ = response.NewJson(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 }
@@ -41,67 +44,82 @@ func (handler *payrollHTTPHandler) Add(w http.ResponseWriter, r *http.Request) {
 	var payrollRequest model.PayrollRequest
 	err := json.NewDecoder(r.Body).Decode(&payrollRequest)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		handler.Logger.Error().Err(err).Msg("")
+		_ = response.NewJson(w, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	if payrollRequest.EmployeeID <= 0 {
-		http.Error(w, helper.ErrEmployeeIdNotValid, http.StatusBadRequest)
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrEmployeeIdNotValid, nil)
 		return
 	}
 
 	if payrollRequest.TotalHariMasuk < 0 {
-		http.Error(w, helper.ErrPresentDayNotValid, http.StatusBadRequest)
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrPresentDayNotValid, nil)
 		return
 	}
 
 	if payrollRequest.TotalHariTidakMasuk < 0 {
-		http.Error(w, helper.ErrAbsentDayNotValid, http.StatusBadRequest)
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrAbsentDayNotValid, nil)
 		return
 	}
 
 	payroll, err := handler.PayrollUC.Add(&payrollRequest)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handler.Logger.Error().Err(err).Msg("")
+		code, message := apperrors.HandleAppError(err)
+		_ = response.NewJson(w, code, message, nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(&payroll)
+	err = response.NewJson(w, http.StatusCreated, http.StatusText(http.StatusCreated), payroll)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handler.Logger.Error().Err(err).Msg("")
+		_ = response.NewJson(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 }
 
 func (handler *payrollHTTPHandler) Detail(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/payrolls/")
+	path := r.URL.Path
+	parts := strings.Split(path, "/")
+
+	if len(parts) < 3 {
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrPayrollIdNotValid, nil)
+		return
+	}
+
+	idStr := parts[2]
 	if idStr == "" {
-		http.Error(w, helper.ErrPayrollIdNotValid, http.StatusBadRequest)
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrPayrollIdNotValid, nil)
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrPayrollIdNotValid, nil)
 		return
 	}
 
 	if id <= 0 {
-		http.Error(w, helper.ErrPayrollIdNotValid, http.StatusBadRequest)
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrPayrollIdNotValid, nil)
 		return
 	}
 
 	payroll, err := handler.PayrollUC.Detail(int64(id))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// if !strings.Contains(err.Error(), "not found") {
+		handler.Logger.Error().Err(err).Msg("")
+		// }
+		code, message := apperrors.HandleAppError(err)
+		_ = response.NewJson(w, code, message, nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(&payroll)
+	err = response.NewJson(w, http.StatusOK, http.StatusText(http.StatusOK), payroll)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handler.Logger.Error().Err(err).Msg("")
+		_ = response.NewJson(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 }

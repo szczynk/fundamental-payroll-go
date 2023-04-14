@@ -1,0 +1,573 @@
+openapi: 3.0.0
+info:
+  title: Fundamental Payroll Program
+  description: >-
+    \# Fundamental Payroll Program
+
+      
+    \## Description
+
+      
+    This is a simple CLI payroll program built with Go that allows you to manage
+    employee data and process salaries according to their grade and attendance.
+    The program has the following features:
+
+      
+    \## Features
+
+
+    The following features are included in the program:  
+
+    1\. Add Employee: Add a new employee to the system with their name, grade,
+    and other relevant details.
+
+
+    2\. List Employees: Display a list of all employees currently in the system.
+
+
+    3\. Process Salaries: Process employee salaries based on the salary matrix,
+    which takes into account the basic salary, pay cuts, additional salary, and
+    allowance. The program will also calculate additional salary for head of
+    family employees who are married and male.
+
+
+    4\. List Salary Matrices: Display a list of all salary matrices currently in
+    the system.  
+      
+    \## Usage
+
+      
+    Once the program is running, you can interact with it through the command
+    line interface. The program will display a menu with the available options:
+
+      
+    1\. Add Employee
+
+
+    2\. List Employees
+
+
+    3\. Process Salaries
+
+
+    4\. List Salary Matrices
+
+
+    5\. Exit
+
+      
+    To select an option, simply enter the corresponding number and press enter.
+    Follow the prompts to add employee details, process salaries, or view
+    employee and salary matrix data.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /employees:
+    get:
+      tags:
+        - employees
+      summary: http://localhost:8080/employees
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:47:23 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '347'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEmployeesResponse'
+    post:
+      tags:
+        - employees
+      summary: http://localhost:8080/employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:42:03 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '118'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedEmployeeResponse'
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:45:09 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '72'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              examples:
+                example-0:
+                  summary: Invalid name
+                  value:
+                    status: 400
+                    message: name yang dimasukkan tidak valid
+                    data: null
+                example-1:
+                  summary: Invalid gender
+                  value:
+                    status: 400
+                    message: gender yang dimasukkan tidak valid
+                    data: null
+                example-2:
+                  summary: Invalid grade
+                  value:
+                    status: 400
+                    message: invalid employee grade
+                    data: null
+  /payrolls:
+    get:
+      tags:
+        - payrolls
+      summary: http://localhost:8080/payrolls
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:48:17 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '220'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPayrollsResponse'
+    post:
+      tags:
+        - payrolls
+      summary: http://localhost:8080/payrolls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayrollRequest'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:48:52 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '223'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedPayrollResponse'
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:49:41 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '79'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example:
+                status: 400
+                message: employee id yang dimasukkan tidak valid
+                data: null
+  /payrolls/{id}:
+    get:
+      tags:
+        - payrolls
+      summary: http://localhost:8080/payrolls/:id
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: required
+          example: '1'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:50:38 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '218'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailPayrollResponse'
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:51:39 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '78'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example:
+                status: 400
+                message: payroll id yang dimasukkan tidak valid
+                data: null
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:51:11 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '57'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+              example:
+                status: 404
+                message: payroll not found
+                data: null
+  /salaries:
+    get:
+      tags:
+        - salaries
+      summary: http://localhost:8080/salaries
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:50:08 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '349'
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ListSalariesResponse'
+              example:
+                status: 200
+                message: OK
+                data:
+                  - id: 1
+                    grade: 1
+                    basic_salary: 5000000
+                    pay_cut: 100000
+                    allowance: 150000
+                    head_of_family: 1000000
+                  - id: 2
+                    grade: 2
+                    basic_salary: 9000000
+                    pay_cut: 200000
+                    allowance: 300000
+                    head_of_family: 2000000
+                  - id: 3
+                    grade: 3
+                    basic_salary: 15000000
+                    pay_cut: 400000
+                    allowance: 600000
+                    head_of_family: 3000000
+
+components:
+  schemas:
+    Employee:
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: adli sukuna
+        gender:
+          type: string
+          example: laki-laki
+        grade:
+          type: integer
+          format: int8
+          example: 1
+        married:
+          type: boolean
+          example: true
+    EmployeeRequest:
+      type: object
+      properties: 
+        name:
+          type: string
+          example: adli sukuna
+        gender:
+          type: string
+          example: laki-laki
+        grade:
+          type: integer
+          format: int8
+          example: 1
+        married:
+          type: boolean
+          example: true
+    ListEmployeesResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 200
+        message:
+          type: string
+          example: OK
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+    CreatedEmployeeResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 201
+        message:
+          type: string
+          example: Created
+        data:
+          $ref: '#/components/schemas/Employee'
+    
+    Payroll:
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: int64
+          example: 1
+        basic_salary:
+          type: integer
+          format: int64
+          example: 5000000
+        pay_cut:
+          type: integer
+          format: int64
+          example: 400000
+        additional_salary:
+          type: integer
+          format: int64
+          example: 3400000
+        employee:
+          $ref: '#/components/schemas/Employee'
+        employee_id:
+          type: integer
+          format: int64
+          example: 1
+    PayrollRequest:
+      type: object
+      properties: 
+        employee_id:
+          type: integer
+          format: int64
+          example: 1
+        total_hari_masuk:
+          type: integer
+          format: int64
+          example: 15
+        total_hari_tidak_masuk:
+          type: integer
+          format: int64
+          example: 5
+    ListPayrollsResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 200
+        message:
+          type: string
+          example: OK
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payroll'
+    CreatedPayrollResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 201
+        message:
+          type: string
+          example: Created
+        data:
+          $ref: '#/components/schemas/Payroll'
+    DetailPayrollResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 200
+        message:
+          type: string
+          example: OK
+        data:
+          $ref: '#/components/schemas/Payroll'
+    
+    Salary:
+      type: object
+      properties: 
+        id:
+          type: integer
+          format: int64
+          example: 1
+        grade:
+          type: integer
+          format: int8
+          example: 1
+        basic_salary:
+          type: integer
+          format: int64
+          example: 5000000
+        pay_cut:
+          type: integer
+          format: int64
+          example: 100000,
+        allowance:
+          type: integer
+          format: int64
+          example: 150000
+        head_of_family:
+          type: integer
+          format: int64
+          example: 1000000
+    ListSalariesResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 200
+        message:
+          type: string
+          example: OK
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Salary'
+          
+    InvalidResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 400
+        message:
+          type: string
+          example: Invalid
+        data: 
+          type: object
+          example: null
+    NotFoundResponse:
+      type: object
+      properties: 
+        status:
+          type: integer
+          format: int
+          example: 404
+        message:
+          type: string
+          example: Not Found
+        data: 
+          type: object
+          example: null

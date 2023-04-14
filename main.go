@@ -5,7 +5,9 @@ import (
 	"fundamental-payroll-go/config"
 	"fundamental-payroll-go/config/db"
 	"fundamental-payroll-go/handler"
-	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
+	"fundamental-payroll-go/helper/logger"
+	"fundamental-payroll-go/middleware"
 	"fundamental-payroll-go/repository"
 	"fundamental-payroll-go/usecase"
 	"log"
@@ -18,16 +20,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	employeeUC, salaryUC, payrollUC := createUsecase(config)
+	l := logger.New(config.Debug)
 
-	switch config.Mode {
+	employeeUC, salaryUC, payrollUC := createUsecase(config, l)
+
+	switch config.Handler {
 	case "http":
-		employeeHTTPHandler := handler.NewEmployeeHTTPHandler(employeeUC)
-		salaryHTTPHandler := handler.NewSalaryHTTPHandler(salaryUC)
-		payrollHTTPHandler := handler.NewPayrollHTTPHandler(payrollUC)
-		err := NewServer(config, employeeHTTPHandler, payrollHTTPHandler, salaryHTTPHandler)
+		employeeHTTPHandler := handler.NewEmployeeHTTPHandler(l, employeeUC)
+		salaryHTTPHandler := handler.NewSalaryHTTPHandler(l, salaryUC)
+		payrollHTTPHandler := handler.NewPayrollHTTPHandler(l, payrollUC)
+		err := NewServer(config, l, employeeHTTPHandler, payrollHTTPHandler, salaryHTTPHandler)
 		if err != nil {
-			log.Fatal(err)
+			l.Fatal().Err(err).Msg("server fail to start")
 		}
 	default:
 		employeeHandler := handler.NewEmployeeHandler(employeeUC)
@@ -37,7 +41,7 @@ func main() {
 	}
 }
 
-func createUsecase(config *config.Config) (
+func createUsecase(config *config.Config, logger *logger.Logger) (
 	usecase.EmployeeUsecase,
 	usecase.SalaryUsecase,
 	usecase.PayrollUsecase,
@@ -56,13 +60,13 @@ func createUsecase(config *config.Config) (
 		case "pgx":
 			DB, err = db.NewPgxDatabase(config)
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal().Err(err).Msg("database fail to start")
 			}
 			employeeRepo = repository.NewEmployeePgxRepository(DB)
 			salaryRepo = repository.NewSalaryPgxRepository(DB)
 			payrollRepo = repository.NewPayrollPgxRepository(DB)
 		default:
-			log.Fatalln("database driver not existed")
+			logger.Fatal().Msg(apperrors.ErrDbDriverNotFound)
 		}
 	case "json":
 		employeeRepo = repository.NewEmployeeJsonRepository()
@@ -80,69 +84,81 @@ func createUsecase(config *config.Config) (
 
 func NewServer(
 	config *config.Config,
+	logger *logger.Logger,
 	employeeHandler handler.EmployeeHTTPHandler,
 	payrollHandler handler.PayrollHTTPHandler,
 	salaryHandler handler.SalaryHTTPHandler,
 ) error {
 	mux := http.NewServeMux()
 
+	muxMiddleware := new(middleware.Middleware)
+	muxMiddleware.Handler = mux
+
+	muxMiddleware.Use(middleware.ContentTypeJson)
+	muxMiddleware.Use(
+		func(w http.ResponseWriter, r *http.Request, next http.Handler) http.Handler {
+			return middleware.Log(logger, w, r, next)
+		},
+	)
+	muxMiddleware.Use(
+		func(w http.ResponseWriter, r *http.Request, next http.Handler) http.Handler {
+			return middleware.Error(logger, w, r, next)
+		},
+	)
+
 	mux.HandleFunc("/employees", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
 		switch r.Method {
 		case "GET":
 			employeeHandler.List(w, r)
 		case "POST":
 			employeeHandler.Add(w, r)
 		default:
-			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 			return
 		}
 	})
 
 	mux.HandleFunc("/payrolls", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
 		switch r.Method {
 		case "GET":
 			payrollHandler.List(w, r)
 		case "POST":
 			payrollHandler.Add(w, r)
 		default:
-			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 			return
 		}
 	})
 
 	mux.HandleFunc("/payrolls/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
 		switch r.Method {
 		case "GET":
 			payrollHandler.Detail(w, r)
 		default:
-			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 			return
 		}
 	})
 
 	mux.HandleFunc("/salaries", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
 		switch r.Method {
 		case "GET":
 			salaryHandler.List(w, r)
 		default:
-			http.Error(w, helper.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 			return
 		}
 	})
 
-	server := &http.Server{
-		Addr:    "localhost:" + config.Port,
-		Handler: mux,
-	}
+	server := new(http.Server)
+	server.Addr = "localhost:" + config.Port
+	server.Handler = muxMiddleware
 
 	err := server.ListenAndServe()
 	if err != nil {
 		return err
 	}
-	log.Printf("live on http://localhost:%s", config.Port)
+
+	logger.Info().Msgf("live on http://localhost:%s", config.Port)
 	return nil
 }

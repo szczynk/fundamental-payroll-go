@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/model"
 )
 
@@ -53,7 +53,7 @@ func (repo *employeeRepository) getIndexByID(id int64) (int, error) {
 		}
 	}
 
-	return -1, helper.NewAppError(helper.ErrIdNotFound)
+	return -1, apperrors.New(apperrors.ErrIdNotFound)
 }
 
 func (repo *employeeRepository) Detail(id int64) (*model.Employee, error) {

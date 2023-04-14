@@ -1,15 +1,16 @@
 package config
 
 import (
-	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
+	Debug    bool     `mapstructure:"debug"`
 	Port     string   `mapstructure:"port"`
 	Storage  string   `mapstructure:"storage"`
-	Mode     string   `mapstructure:"mode"`
+	Handler  string   `mapstructure:"handler"`
 	Database Database `mapstructure:"db"`
 }
 
@@ -24,7 +25,7 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		_, ok := err.(viper.ConfigFileNotFoundError)
 		if ok {
-			return nil, helper.NewAppError(helper.ErrEnvNotFound)
+			return nil, apperrors.New(apperrors.ErrEnvNotFound)
 		}
 		return nil, err
 	}

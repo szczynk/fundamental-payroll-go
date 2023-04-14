@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/repository"
 )
@@ -39,7 +39,7 @@ func (uc *employeeUsecase) Add(req *model.EmployeeRequest) (*model.Employee, err
 		}
 	}
 	if !isValidGrade {
-		return nil, helper.NewAppError(helper.ErrEmployeeGradeNotValid)
+		return nil, apperrors.New(apperrors.ErrEmployeeGradeNotValid)
 	}
 
 	employee := &model.Employee{

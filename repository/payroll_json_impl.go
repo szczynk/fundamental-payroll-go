@@ -2,7 +2,7 @@ package repository
 
 import (
 	"encoding/json"
-	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/model"
 	"os"
 )
@@ -97,7 +97,7 @@ func (repo *payrollJsonRepository) getIndexByID(id int64) (int, error) {
 		}
 	}
 
-	return -1, helper.NewAppError(helper.ErrIdNotFound)
+	return -1, apperrors.New(apperrors.ErrIdNotFound)
 }
 
 func (repo *payrollJsonRepository) Detail(id int64) (*model.Payroll, error) {

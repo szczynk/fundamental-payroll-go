@@ -1,0 +1,667 @@
+{
+	"info": {
+		"_postman_id": "71cb1c8c-2906-4568-abce-36ac81c923a4",
+		"name": "Fundamental Payroll Program",
+		"description": "\\# Fundamental Payroll Program\n\n  \n\\## Description\n\n  \nThis is a simple CLI payroll program built with Go that allows you to manage employee data and process salaries according to their grade and attendance. The program has the following features:\n\n  \n\\## Features\n\nThe following features are included in the program:  \n1\\. Add Employee: Add a new employee to the system with their name, grade, and other relevant details.\n\n2\\. List Employees: Display a list of all employees currently in the system.\n\n3\\. Process Salaries: Process employee salaries based on the salary matrix, which takes into account the basic salary, pay cuts, additional salary, and allowance. The program will also calculate additional salary for head of family employees who are married and male.\n\n4\\. List Salary Matrices: Display a list of all salary matrices currently in the system.  \n  \n\\## Usage\n\n  \nOnce the program is running, you can interact with it through the command line interface. The program will display a menu with the available options:\n\n  \n1\\. Add Employee\n\n2\\. List Employees\n\n3\\. Process Salaries\n\n4\\. List Salary Matrices\n\n5\\. Exit\n\n  \nTo select an option, simply enter the corresponding number and press enter. Follow the prompts to add employee details, process salaries, or view employee and salary matrix data.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20487362"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/employees",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"employees"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "A successful response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/employees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:47:23 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "347"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"OK\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"adli sukuna\",\n            \"gender\": \"laki-laki\",\n            \"grade\": 1,\n            \"married\": false\n        },\n        {\n            \"id\": 2,\n            \"name\": \"sutan jangkrik\",\n            \"gender\": \"laki-laki\",\n            \"grade\": 1,\n            \"married\": true\n        },\n        {\n            \"id\": 3,\n            \"name\": \"adli sukuna\",\n            \"gender\": \"laki-laki\",\n            \"grade\": 1,\n            \"married\": true\n        },\n        {\n            \"id\": 4,\n            \"name\": \"adli sukuna\",\n            \"gender\": \"laki-laki\",\n            \"grade\": 1,\n            \"married\": true\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "http://localhost:8080/employees",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"adli sukuna\",\n  \"gender\": \"laki-laki\",\n  \"grade\": 1,\n  \"married\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"employees"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "A successful response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"adli sukuna\",\n  \"gender\": \"laki-laki\",\n  \"grade\": 1,\n  \"married\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/employees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:42:03 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "118"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 201,\n    \"message\": \"Created\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"adli sukuna\",\n        \"gender\": \"laki-laki\",\n        \"grade\": 1,\n        \"married\": true\n    }\n}"
+				},
+				{
+					"name": "Invalid name",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"gender\": \"\",\n  \"grade\": 0,\n  \"married\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/employees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:45:09 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "72"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"name yang dimasukkan tidak valid\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Invalid gender",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test\",\n  \"gender\": \"\",\n  \"grade\": 0,\n  \"married\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/employees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:46:08 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "74"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"gender yang dimasukkan tidak valid\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Invalid grade",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test\",\n  \"gender\": \"perempuan\",\n  \"grade\": 0,\n  \"married\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/employees",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:46:29 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "62"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"invalid employee grade\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "http://localhost:8080/payrolls",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/payrolls",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payrolls"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "A successful response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/payrolls",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payrolls"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:48:17 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "220"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"OK\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"basic_salary\": 5000000,\n            \"pay_cut\": 400000,\n            \"additional_salary\": 3400000,\n            \"employee\": {\n                \"id\": 1,\n                \"name\": \"adli sukuna\",\n                \"gender\": \"laki-laki\",\n                \"grade\": 1,\n                \"married\": false\n            },\n            \"employee_id\": 1\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "http://localhost:8080/payrolls",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"employee_id\": 1,\n  \"total_hari_masuk\": 15,\n  \"total_hari_tidak_masuk\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/payrolls",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payrolls"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "A successful response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employee_id\": 1,\n  \"total_hari_masuk\": 15,\n  \"total_hari_tidak_masuk\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/payrolls",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payrolls"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:48:52 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "223"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 201,\n    \"message\": \"Created\",\n    \"data\": {\n        \"id\": 1,\n        \"basic_salary\": 5000000,\n        \"pay_cut\": 500000,\n        \"additional_salary\": 2250000,\n        \"employee\": {\n            \"id\": 1,\n            \"name\": \"adli sukuna\",\n            \"gender\": \"laki-laki\",\n            \"grade\": 1,\n            \"married\": false\n        },\n        \"employee_id\": 1\n    }\n}"
+				},
+				{
+					"name": "Invalid employee id",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employee_id\": 0,\n  \"total_hari_masuk\": 15,\n  \"total_hari_tidak_masuk\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/payrolls",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payrolls"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:49:41 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "79"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"employee id yang dimasukkan tidak valid\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "http://localhost:8080/payrolls/:id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/payrolls/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payrolls",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "required"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "A successful response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/payrolls/:id",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payrolls",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "required"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:50:38 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "218"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"OK\",\n    \"data\": {\n        \"id\": 1,\n        \"basic_salary\": 5000000,\n        \"pay_cut\": 400000,\n        \"additional_salary\": 3400000,\n        \"employee\": {\n            \"id\": 1,\n            \"name\": \"adli sukuna\",\n            \"gender\": \"laki-laki\",\n            \"grade\": 1,\n            \"married\": false\n        },\n        \"employee_id\": 1\n    }\n}"
+				},
+				{
+					"name": "Not found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/payrolls/:id",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payrolls",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3",
+									"description": "required"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:51:11 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "57"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 404,\n    \"message\": \"payroll not found\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Invalid id",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/payrolls/:id",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payrolls",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "0",
+									"description": "required"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:51:39 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "78"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"payroll id yang dimasukkan tidak valid\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "http://localhost:8080/salaries",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/salaries",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"salaries"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "A successful response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/salaries",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"salaries"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=utf8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 13 Apr 2023 08:50:08 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "349"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"OK\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"grade\": 1,\n            \"basic_salary\": 5000000,\n            \"pay_cut\": 100000,\n            \"allowance\": 150000,\n            \"head_of_family\": 1000000\n        },\n        {\n            \"id\": 2,\n            \"grade\": 2,\n            \"basic_salary\": 9000000,\n            \"pay_cut\": 200000,\n            \"allowance\": 300000,\n            \"head_of_family\": 2000000\n        },\n        {\n            \"id\": 3,\n            \"grade\": 3,\n            \"basic_salary\": 15000000,\n            \"pay_cut\": 400000,\n            \"allowance\": 600000,\n            \"head_of_family\": 3000000\n        }\n    ]\n}"
+				}
+			]
+		}
+	]
+}

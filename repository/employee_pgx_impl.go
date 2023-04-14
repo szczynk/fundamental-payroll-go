@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fundamental-payroll-go/config/db"
+	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/model"
 )
 
@@ -81,6 +82,9 @@ func (repo *employeePgxRepository) Detail(id int64) (*model.Employee, error) {
 	row := repo.db.QueryRowContext(ctx, sqlQuery, id)
 	err = row.Scan(&employee.ID, &employee.Name, &employee.Gender, &employee.Grade, &employee.Married)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, apperrors.New(apperrors.ErrEmployeeNotFound)
+		}
 		return nil, err
 	}
 

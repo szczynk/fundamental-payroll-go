@@ -1,0 +1,447 @@
+openapi: 3.0.0
+info:
+  title: Fundamental Payroll Program
+  description: >-
+    \# Fundamental Payroll Program
+
+      
+    \## Description
+
+      
+    This is a simple CLI payroll program built with Go that allows you to manage
+    employee data and process salaries according to their grade and attendance.
+    The program has the following features:
+
+      
+    \## Features
+
+
+    The following features are included in the program:  
+
+    1\. Add Employee: Add a new employee to the system with their name, grade,
+    and other relevant details.
+
+
+    2\. List Employees: Display a list of all employees currently in the system.
+
+
+    3\. Process Salaries: Process employee salaries based on the salary matrix,
+    which takes into account the basic salary, pay cuts, additional salary, and
+    allowance. The program will also calculate additional salary for head of
+    family employees who are married and male.
+
+
+    4\. List Salary Matrices: Display a list of all salary matrices currently in
+    the system.  
+      
+    \## Usage
+
+      
+    Once the program is running, you can interact with it through the command
+    line interface. The program will display a menu with the available options:
+
+      
+    1\. Add Employee
+
+
+    2\. List Employees
+
+
+    3\. Process Salaries
+
+
+    4\. List Salary Matrices
+
+
+    5\. Exit
+
+      
+    To select an option, simply enter the corresponding number and press enter.
+    Follow the prompts to add employee details, process salaries, or view
+    employee and salary matrix data.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /employees:
+    get:
+      tags:
+        - employees
+      summary: localhost:8080/employees
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:47:23 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '347'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 200
+                message: OK
+                data:
+                  - id: 1
+                    name: adli sukuna
+                    gender: laki-laki
+                    grade: 1
+                    married: false
+                  - id: 2
+                    name: sutan jangkrik
+                    gender: laki-laki
+                    grade: 1
+                    married: true
+                  - id: 3
+                    name: adli sukuna
+                    gender: laki-laki
+                    grade: 1
+                    married: true
+                  - id: 4
+                    name: adli sukuna
+                    gender: laki-laki
+                    grade: 1
+                    married: true
+    post:
+      tags:
+        - employees
+      summary: localhost:8080/employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: adli sukuna
+                gender: laki-laki
+                grade: 1
+                married: true
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:42:03 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '118'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 201
+                message: Created
+                data:
+                  id: 1
+                  name: adli sukuna
+                  gender: laki-laki
+                  grade: 1
+                  married: true
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:45:09 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '72'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Invalid name
+                  value:
+                    status: 400
+                    message: name yang dimasukkan tidak valid
+                    data: null
+                example-1:
+                  summary: Invalid gender
+                  value:
+                    status: 400
+                    message: gender yang dimasukkan tidak valid
+                    data: null
+                example-2:
+                  summary: Invalid grade
+                  value:
+                    status: 400
+                    message: invalid employee grade
+                    data: null
+  /payrolls:
+    get:
+      tags:
+        - payrolls
+      summary: localhost:8080/payrolls
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:48:17 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '220'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 200
+                message: OK
+                data:
+                  - id: 1
+                    basic_salary: 5000000
+                    pay_cut: 400000
+                    additional_salary: 3400000
+                    employee:
+                      id: 1
+                      name: adli sukuna
+                      gender: laki-laki
+                      grade: 1
+                      married: false
+                    employee_id: 1
+    post:
+      tags:
+        - payrolls
+      summary: localhost:8080/payrolls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                employee_id: 1
+                total_hari_masuk: 15
+                total_hari_tidak_masuk: 5
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:48:52 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '223'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 201
+                message: Created
+                data:
+                  id: 1
+                  basic_salary: 5000000
+                  pay_cut: 500000
+                  additional_salary: 2250000
+                  employee:
+                    id: 1
+                    name: adli sukuna
+                    gender: laki-laki
+                    grade: 1
+                    married: false
+                  employee_id: 1
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:49:41 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '79'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 400
+                message: employee id yang dimasukkan tidak valid
+                data: null
+  /payrolls/{id}:
+    get:
+      tags:
+        - payrolls
+      summary: localhost:8080/payrolls/:id
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: required
+          example: '1'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:50:38 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '218'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 200
+                message: OK
+                data:
+                  id: 1
+                  basic_salary: 5000000
+                  pay_cut: 400000
+                  additional_salary: 3400000
+                  employee:
+                    id: 1
+                    name: adli sukuna
+                    gender: laki-laki
+                    grade: 1
+                    married: false
+                  employee_id: 1
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:51:39 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '78'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 400
+                message: payroll id yang dimasukkan tidak valid
+                data: null
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:51:11 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '57'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 404
+                message: payroll not found
+                data: null
+  /salaries:
+    get:
+      tags:
+        - salaries
+      summary: localhost:8080/salaries
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json;charset=utf8
+            Date:
+              schema:
+                type: string
+                example: Thu, 13 Apr 2023 08:50:08 GMT
+            Content-Length:
+              schema:
+                type: integer
+                example: '349'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 200
+                message: OK
+                data:
+                  - id: 1
+                    grade: 1
+                    basic_salary: 5000000
+                    pay_cut: 100000
+                    allowance: 150000
+                    head_of_family: 1000000
+                  - id: 2
+                    grade: 2
+                    basic_salary: 9000000
+                    pay_cut: 200000
+                    allowance: 300000
+                    head_of_family: 2000000
+                  - id: 3
+                    grade: 3
+                    basic_salary: 15000000
+                    pay_cut: 400000
+                    allowance: 600000
+                    head_of_family: 3000000
