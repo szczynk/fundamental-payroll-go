@@ -6,12 +6,14 @@ import (
 	"fundamental-payroll-go/config/db"
 	"fundamental-payroll-go/handler"
 	"fundamental-payroll-go/helper/apperrors"
+	"fundamental-payroll-go/helper/input"
 	"fundamental-payroll-go/helper/logger"
 	"fundamental-payroll-go/middleware"
 	"fundamental-payroll-go/repository"
 	"fundamental-payroll-go/usecase"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -34,10 +36,11 @@ func main() {
 			l.Fatal().Err(err).Msg("server fail to start")
 		}
 	default:
-		employeeHandler := handler.NewEmployeeHandler(employeeUC)
-		salaryHandler := handler.NewSalaryHandler(salaryUC)
-		payrollHandler := handler.NewPayrollHandler(payrollUC)
-		handler.Menu(employeeHandler, payrollHandler, salaryHandler)
+		input := input.NewInputReader(os.Stdin)
+		employeeHandler := handler.NewEmployeeHandler(employeeUC, input)
+		salaryHandler := handler.NewSalaryHandler(salaryUC, input)
+		payrollHandler := handler.NewPayrollHandler(payrollUC, input)
+		handler.Menu(employeeHandler, payrollHandler, salaryHandler, input)
 	}
 }
 
@@ -58,7 +61,7 @@ func createUsecase(config *config.Config, logger *logger.Logger) (
 	case "sql":
 		switch config.Database.Driver {
 		case "pgx":
-			DB, err = db.NewPgxDatabase(config)
+			DB, err = db.NewPgxDatabase("pgx", config.Database.URL)
 			if err != nil {
 				logger.Fatal().Err(err).Msg("database fail to start")
 			}
@@ -94,6 +97,7 @@ func NewServer(
 	muxMiddleware := new(middleware.Middleware)
 	muxMiddleware.Handler = mux
 
+	muxMiddleware.Use(middleware.Cors)
 	muxMiddleware.Use(middleware.ContentTypeJson)
 	muxMiddleware.Use(
 		func(w http.ResponseWriter, r *http.Request, next http.Handler) http.Handler {
