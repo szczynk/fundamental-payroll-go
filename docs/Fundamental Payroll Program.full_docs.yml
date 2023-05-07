@@ -93,6 +93,7 @@ paths:
         - employees
       summary: http://localhost:8080/employees
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -185,6 +186,7 @@ paths:
         - payrolls
       summary: http://localhost:8080/payrolls
       requestBody:
+        required: true
         content:
           application/json:
             schema:
