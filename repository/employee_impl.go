@@ -15,8 +15,8 @@ func (repo *employeeRepository) List() ([]model.Employee, error) {
 	return model.Employees, nil
 }
 
-func (repo *employeeRepository) getLastID() (int64, error) {
-	employees, err := repo.List()
+func (repo *employeeRepository) getLastID() int64 {
+	employees, _ := repo.List()
 
 	var tempID int64
 	for _, employee := range employees {
@@ -24,14 +24,11 @@ func (repo *employeeRepository) getLastID() (int64, error) {
 			tempID = employee.ID
 		}
 	}
-	return tempID, err
+	return tempID
 }
 
 func (repo *employeeRepository) Add(employee *model.Employee) (*model.Employee, error) {
-	id, err := repo.getLastID()
-	if err != nil {
-		return nil, err
-	}
+	id := repo.getLastID()
 
 	newEmployee := *employee
 	newEmployee.ID = id + 1
@@ -42,10 +39,7 @@ func (repo *employeeRepository) Add(employee *model.Employee) (*model.Employee, 
 }
 
 func (repo *employeeRepository) getIndexByID(id int64) (int, error) {
-	employees, err := repo.List()
-	if err != nil {
-		return -1, err
-	}
+	employees, _ := repo.List()
 
 	for i, employee := range employees {
 		if id == employee.ID {
@@ -57,10 +51,7 @@ func (repo *employeeRepository) getIndexByID(id int64) (int, error) {
 }
 
 func (repo *employeeRepository) Detail(id int64) (*model.Employee, error) {
-	employees, err := repo.List()
-	if err != nil {
-		return nil, err
-	}
+	employees, _ := repo.List()
 
 	index, err := repo.getIndexByID(id)
 	if err != nil {

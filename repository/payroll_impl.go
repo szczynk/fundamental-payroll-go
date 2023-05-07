@@ -15,8 +15,8 @@ func (repo *payrollRepository) List() ([]model.Payroll, error) {
 	return model.Payrolls, nil
 }
 
-func (repo *payrollRepository) getLastID() (int64, error) {
-	payrolls, err := repo.List()
+func (repo *payrollRepository) getLastID() int64 {
+	payrolls, _ := repo.List()
 
 	var tempID int64
 	for _, payroll := range payrolls {
@@ -24,14 +24,11 @@ func (repo *payrollRepository) getLastID() (int64, error) {
 			tempID = payroll.ID
 		}
 	}
-	return tempID, err
+	return tempID
 }
 
 func (repo *payrollRepository) Add(payroll *model.Payroll) (*model.Payroll, error) {
-	id, err := repo.getLastID()
-	if err != nil {
-		return nil, err
-	}
+	id := repo.getLastID()
 
 	newPayroll := payroll
 	newPayroll.ID = id + 1
@@ -42,10 +39,7 @@ func (repo *payrollRepository) Add(payroll *model.Payroll) (*model.Payroll, erro
 }
 
 func (repo *payrollRepository) getIndexByID(id int64) (int, error) {
-	payrolls, err := repo.List()
-	if err != nil {
-		return -1, err
-	}
+	payrolls, _ := repo.List()
 
 	for i, payroll := range payrolls {
 		if id == payroll.ID {
@@ -57,10 +51,7 @@ func (repo *payrollRepository) getIndexByID(id int64) (int, error) {
 }
 
 func (repo *payrollRepository) Detail(id int64) (*model.Payroll, error) {
-	payrolls, err := repo.List()
-	if err != nil {
-		return nil, nil
-	}
+	payrolls, _ := repo.List()
 
 	index, err := repo.getIndexByID(id)
 	if err != nil {
