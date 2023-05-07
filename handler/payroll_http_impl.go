@@ -95,7 +95,7 @@ func (handler *payrollHTTPHandler) Detail(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	id, err := strconv.Atoi(idStr)
+	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrPayrollIdNotValid, nil)
 		return
@@ -106,11 +106,9 @@ func (handler *payrollHTTPHandler) Detail(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	payroll, err := handler.PayrollUC.Detail(int64(id))
+	payroll, err := handler.PayrollUC.Detail(id)
 	if err != nil {
-		// if !strings.Contains(err.Error(), "not found") {
 		handler.Logger.Error().Err(err).Msg("")
-		// }
 		code, message := apperrors.HandleAppError(err)
 		_ = response.NewJson(w, code, message, nil)
 		return

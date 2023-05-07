@@ -23,14 +23,14 @@ func (handler *salaryHTTPHandler) List(w http.ResponseWriter, r *http.Request) {
 	salaries, err := handler.SalaryUC.List()
 	if err != nil {
 		handler.Logger.Error().Err(err).Msg("")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		_ = response.NewJson(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
 	err = response.NewJson(w, http.StatusOK, http.StatusText(http.StatusOK), salaries)
 	if err != nil {
 		handler.Logger.Error().Err(err).Msg("")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		_ = response.NewJson(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 }

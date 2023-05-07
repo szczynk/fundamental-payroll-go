@@ -53,13 +53,19 @@ func (handler *employeeHTTPHandler) Add(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	gender := strings.ToLower(strings.TrimSpace(employeeRequest.Gender))
-	if gender == "l" {
-		gender = "laki-laki"
-	} else if gender == "p" {
-		gender = "perempuan"
+	gender := strings.TrimSpace(employeeRequest.Gender)
+	if gender == "" {
+		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrEmployeeGenderNotValid, nil)
+		return
 	}
-	if gender != "laki-laki" && gender != "perempuan" {
+
+	lowerGender := strings.ToLower(gender)
+	switch lowerGender {
+	case "l", "laki-laki":
+		gender = "laki-laki"
+	case "p", "perempuan":
+		gender = "perempuan"
+	default:
 		_ = response.NewJson(w, http.StatusBadRequest, apperrors.ErrEmployeeGenderNotValid, nil)
 		return
 	}
