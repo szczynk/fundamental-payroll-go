@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/helper/input"
@@ -24,7 +25,7 @@ func Menu(
 	for {
 		menuStr, _ := input.Scan()
 		menu64, err := strconv.ParseInt(strings.TrimSpace(menuStr), 10, 32)
-		if err != nil {
+		if err != nil && !errors.Is(err, strconv.ErrSyntax) {
 			fmt.Println(err)
 			break
 		}
