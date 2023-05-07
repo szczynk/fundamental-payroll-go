@@ -30,3 +30,6 @@ coverage
 data/employee.json
 data/payroll.json
 data/salary.json
+reports
+Makefile
+.scannerwork
