@@ -1,3 +1,4 @@
+//go:generate mockery --output=../mocks --name EmployeeRepository
 package repository
 
 import "fundamental-payroll-go/model"
