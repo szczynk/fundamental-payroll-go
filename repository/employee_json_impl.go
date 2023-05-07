@@ -7,38 +7,41 @@ import (
 	"os"
 )
 
-const employeeJsonFile = "data/employee.json"
-
-type employeeJsonRepository struct{}
-
-func NewEmployeeJsonRepository() EmployeeRepository {
-	return new(employeeJsonRepository)
+type employeeJsonRepository struct {
+	jsonFile string
 }
 
-func (repo *employeeJsonRepository) encodeJSON(path string, employees *[]model.Employee) error {
-	writer, err := os.Create(path)
+func NewEmployeeJsonRepository() EmployeeRepository {
+	r := new(employeeJsonRepository)
+	r.jsonFile = "data/employee.json"
+
+	return r
+}
+
+func (repo *employeeJsonRepository) encodeJSON() error {
+	writer, err := os.Create(repo.jsonFile)
 	if err != nil {
 		return err
 	}
 	defer writer.Close()
 
 	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&employees)
+	err = encoder.Encode(&model.Employees)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (repo *employeeJsonRepository) decodeJSON(path string, employees *[]model.Employee) error {
-	reader, err := os.Open(path)
+func (repo *employeeJsonRepository) decodeJSON() error {
+	reader, err := os.Open(repo.jsonFile)
 	if err != nil {
 		return err
 	}
 	defer reader.Close()
 
 	decoder := json.NewDecoder(reader)
-	err = decoder.Decode(&employees)
+	err = decoder.Decode(&model.Employees)
 	if err != nil {
 		return err
 	}
@@ -46,7 +49,7 @@ func (repo *employeeJsonRepository) decodeJSON(path string, employees *[]model.E
 }
 
 func (repo *employeeJsonRepository) List() ([]model.Employee, error) {
-	err := repo.decodeJSON(employeeJsonFile, &model.Employees)
+	err := repo.decodeJSON()
 	if err != nil {
 		return []model.Employee{}, err
 	}
@@ -77,7 +80,7 @@ func (repo *employeeJsonRepository) Add(employee *model.Employee) (*model.Employ
 
 	model.Employees = append(model.Employees, *newEmployee)
 
-	err = repo.encodeJSON(employeeJsonFile, &model.Employees)
+	err = repo.encodeJSON()
 	if err != nil {
 		return nil, err
 	}

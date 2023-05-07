@@ -6,23 +6,25 @@ import (
 	"os"
 )
 
-const salaryJsonFile = "data/salary.json"
-
-type salaryJsonRepository struct{}
-
-func NewSalaryJsonRepository() SalaryRepository {
-	return new(salaryJsonRepository)
+type salaryJsonRepository struct {
+	jsonFile string
 }
 
-func (repo *salaryJsonRepository) decodeJSON(path string, salaries *[]model.SalaryMatrix) error {
-	reader, err := os.Open(path)
+func NewSalaryJsonRepository() SalaryRepository {
+	r := new(salaryJsonRepository)
+	r.jsonFile = "data/salary.json"
+
+	return r
+}
+func (repo *salaryJsonRepository) decodeJSON() error {
+	reader, err := os.Open(repo.jsonFile)
 	if err != nil {
 		return err
 	}
 	defer reader.Close()
 
 	decoder := json.NewDecoder(reader)
-	err = decoder.Decode(&salaries)
+	err = decoder.Decode(&model.SalaryMatrices)
 	if err != nil {
 		return err
 	}
@@ -30,7 +32,7 @@ func (repo *salaryJsonRepository) decodeJSON(path string, salaries *[]model.Sala
 }
 
 func (repo *salaryJsonRepository) List() ([]model.SalaryMatrix, error) {
-	err := repo.decodeJSON(salaryJsonFile, &model.SalaryMatrices)
+	err := repo.decodeJSON()
 	if err != nil {
 		return []model.SalaryMatrix{}, err
 	}

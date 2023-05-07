@@ -7,38 +7,41 @@ import (
 	"os"
 )
 
-const payrollJsonFile = "data/payroll.json"
-
-type payrollJsonRepository struct{}
-
-func NewPayrollJsonRepository() PayrollRepository {
-	return new(payrollJsonRepository)
+type payrollJsonRepository struct {
+	jsonFile string
 }
 
-func (repo *payrollJsonRepository) encodeJSON(path string, payrolls *[]model.Payroll) error {
-	writer, err := os.Create(path)
+func NewPayrollJsonRepository() PayrollRepository {
+	r := new(payrollJsonRepository)
+	r.jsonFile = "data/payroll.json"
+
+	return r
+}
+
+func (repo *payrollJsonRepository) encodeJSON() error {
+	writer, err := os.Create(repo.jsonFile)
 	if err != nil {
 		return err
 	}
 	defer writer.Close()
 
 	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&payrolls)
+	err = encoder.Encode(&model.Payrolls)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (repo *payrollJsonRepository) decodeJSON(path string, payrolls *[]model.Payroll) error {
-	reader, err := os.Open(path)
+func (repo *payrollJsonRepository) decodeJSON() error {
+	reader, err := os.Open(repo.jsonFile)
 	if err != nil {
 		return err
 	}
 	defer reader.Close()
 
 	decoder := json.NewDecoder(reader)
-	err = decoder.Decode(&payrolls)
+	err = decoder.Decode(&model.Payrolls)
 	if err != nil {
 		return err
 	}
@@ -46,7 +49,7 @@ func (repo *payrollJsonRepository) decodeJSON(path string, payrolls *[]model.Pay
 }
 
 func (repo *payrollJsonRepository) List() ([]model.Payroll, error) {
-	err := repo.decodeJSON(payrollJsonFile, &model.Payrolls)
+	err := repo.decodeJSON()
 	if err != nil {
 		return []model.Payroll{}, err
 	}
@@ -77,7 +80,7 @@ func (repo *payrollJsonRepository) Add(payroll *model.Payroll) (*model.Payroll, 
 
 	model.Payrolls = append(model.Payrolls, *newPayroll)
 
-	err = repo.encodeJSON(payrollJsonFile, &model.Payrolls)
+	err = repo.encodeJSON()
 	if err != nil {
 		return nil, err
 	}
