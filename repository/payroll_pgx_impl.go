@@ -24,14 +24,14 @@ func (repo *payrollPgxRepository) List() ([]model.Payroll, error) {
 	ctx, cancel := db.NewContext()
 	defer cancel()
 
-	sqlQuery := `
-	SELECT payrolls.id, payrolls.basic_salary, payrolls.pay_cut, payrolls.additional_salary, payrolls.employee_id, 
-				 employees.id, employees.name, employees.gender, employees.grade, employees.married 
-	FROM payrolls 
-	INNER JOIN employees ON payrolls.employee_id = employees.id
-	ORDER BY payrolls.id ASC
-	`
-	rows, err := repo.db.QueryContext(ctx, sqlQuery)
+	sqlQuery := "SELECT payrolls.id, payrolls.basic_salary, payrolls.pay_cut, payrolls.additional_salary, payrolls.employee_id, employees.id, employees.name, employees.gender, employees.grade, employees.married FROM payrolls INNER JOIN employees ON payrolls.employee_id = employees.id ORDER BY payrolls.id ASC"
+	stmt, err := repo.db.PrepareContext(ctx, sqlQuery)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx)
 	if err != nil {
 		return payrolls, err
 	}
@@ -63,25 +63,27 @@ func (repo *payrollPgxRepository) List() ([]model.Payroll, error) {
 }
 
 func (repo *payrollPgxRepository) Add(payroll *model.Payroll) (*model.Payroll, error) {
-	var payrollID int64
+	newPayroll := new(model.Payroll)
+	var employee model.Employee
+	var err error
 
 	ctx, cancel := db.NewContext()
 	defer cancel()
 
-	sqlQuery := `
-	INSERT INTO payrolls (basic_salary, pay_cut, additional_salary, employee_id)
-	VALUES ($1, $2, $3, $4)
-	RETURNING id
-	`
-	row := repo.db.QueryRowContext(ctx, sqlQuery, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.EmployeeID)
-	err := row.Scan(&payrollID)
+	sqlQuery := "WITH inserted_payroll AS ( INSERT INTO payrolls (basic_salary, pay_cut, additional_salary, employee_id) VALUES ($1, $2, $3, $4) RETURNING id, basic_salary, pay_cut, additional_salary, employee_id ) SELECT id, name, gender, grade, married FROM inserted_payroll INNER JOIN employees ON inserted_payroll.employee_id = employees.id"
+	stmt, err := repo.db.PrepareContext(ctx, sqlQuery)
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
-	newPayroll, err := repo.Detail(payrollID)
+	row := stmt.QueryRowContext(ctx, payroll.BasicSalary, payroll.PayCut, payroll.AdditionalSalary, payroll.EmployeeID)
+	err = row.Scan(
+		&payroll.ID, &payroll.BasicSalary, &payroll.PayCut, &payroll.AdditionalSalary, &payroll.EmployeeID,
+		&employee.ID, &employee.Name, &employee.Gender, &employee.Grade, &employee.Married,
+	)
 	if err != nil {
-		return newPayroll, err
+		return nil, err
 	}
 
 	return newPayroll, nil
@@ -95,15 +97,14 @@ func (repo *payrollPgxRepository) Detail(id int64) (*model.Payroll, error) {
 	ctx, cancel := db.NewContext()
 	defer cancel()
 
-	sqlQuery := `
-	SELECT payrolls.id, payrolls.basic_salary, payrolls.pay_cut, payrolls.additional_salary, payrolls.employee_id, 
-				 employees.id, employees.name, employees.gender, employees.grade, employees.married 
-	FROM payrolls 
-	INNER JOIN employees ON payrolls.employee_id = employees.id
-	WHERE payrolls.id = $1
-	LIMIT 1
-	`
-	row := repo.db.QueryRowContext(ctx, sqlQuery, id)
+	sqlQuery := "SELECT payrolls.id, payrolls.basic_salary, payrolls.pay_cut, payrolls.additional_salary, payrolls.employee_id, employees.id, employees.name, employees.gender, employees.grade, employees.married FROM payrolls INNER JOIN employees ON payrolls.employee_id = employees.id WHERE payrolls.id = $1 LIMIT 1"
+	stmt, err := repo.db.PrepareContext(ctx, sqlQuery)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(ctx, id)
 	err = row.Scan(
 		&payroll.ID, &payroll.BasicSalary, &payroll.PayCut, &payroll.AdditionalSalary, &payroll.EmployeeID,
 		&employee.ID, &employee.Name, &employee.Gender, &employee.Grade, &employee.Married,

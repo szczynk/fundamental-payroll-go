@@ -24,7 +24,13 @@ func (repo *salaryPgxRepository) List() ([]model.SalaryMatrix, error) {
 	defer cancel()
 
 	sqlQuery := "SELECT id, grade, basic_salary, pay_cut, allowance, head_of_family FROM salaries ORDER BY id ASC"
-	rows, err := repo.db.QueryContext(ctx, sqlQuery)
+	stmt, err := repo.db.PrepareContext(ctx, sqlQuery)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx)
 	if err != nil {
 		return salaries, err
 	}
