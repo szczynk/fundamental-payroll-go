@@ -4,27 +4,31 @@ import (
 	"fmt"
 	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/helper/apperrors"
+	"fundamental-payroll-go/helper/input"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
+	"strconv"
+	"strings"
 )
 
 type payrollHandler struct {
 	PayrollUC usecase.PayrollUsecase
+	Input     *input.InputReader
 }
 
 func NewPayrollHandler(
 	payrollUC usecase.PayrollUsecase,
+	input *input.InputReader,
 ) PayrollHandler {
-	return &payrollHandler{
-		PayrollUC: payrollUC,
-	}
+	h := new(payrollHandler)
+	h.PayrollUC = payrollUC
+	h.Input = input
+
+	return h
 }
 
 func (handler *payrollHandler) List() {
-	err := helper.ClearTerminal()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = helper.ClearTerminal()
 
 	payrolls, err := handler.PayrollUC.List()
 	if err != nil {
@@ -58,33 +62,45 @@ func (handler *payrollHandler) List() {
 }
 
 func (handler *payrollHandler) Add() {
-	err := helper.ClearTerminal()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = helper.ClearTerminal()
 
 	fmt.Println("Add new payroll")
 
 	fmt.Print("Employee ID = ")
-	var employeeID int64
-	fmt.Scanln(&employeeID)
-	if employeeID <= 0 {
+	employeeIDStr, err := handler.Input.Scan()
+	if err != nil {
+		fmt.Println(apperrors.ErrEmployeeIdNotValid)
+		return
+	}
+
+	employeeID, err := strconv.ParseInt(strings.TrimSpace(employeeIDStr), 10, 64)
+	if err != nil || employeeID <= 0 {
 		fmt.Println(apperrors.ErrEmployeeIdNotValid)
 		return
 	}
 
 	fmt.Print("TotalHariMasuk = ")
-	var totalHariMasuk int64
-	fmt.Scanln(&totalHariMasuk)
-	if totalHariMasuk < 0 {
+	totalHariMasukStr, err := handler.Input.Scan()
+	if err != nil {
+		fmt.Println(apperrors.ErrPresentDayNotValid)
+		return
+	}
+
+	totalHariMasuk, err := strconv.ParseInt(strings.TrimSpace(totalHariMasukStr), 10, 64)
+	if err != nil || totalHariMasuk < 0 {
 		fmt.Println(apperrors.ErrPresentDayNotValid)
 		return
 	}
 
 	fmt.Print("TotalHariTidakMasuk = ")
-	var totalHariTidakMasuk int64
-	fmt.Scanln(&totalHariTidakMasuk)
-	if totalHariTidakMasuk < 0 {
+	totalHariTidakMasukStr, err := handler.Input.Scan()
+	if err != nil {
+		fmt.Println(apperrors.ErrAbsentDayNotValid)
+		return
+	}
+
+	totalHariTidakMasuk, err := strconv.ParseInt(strings.TrimSpace(totalHariTidakMasukStr), 10, 64)
+	if err != nil || totalHariTidakMasuk < 0 {
 		fmt.Println(apperrors.ErrAbsentDayNotValid)
 		return
 	}
@@ -142,17 +158,19 @@ func (handler *payrollHandler) Add() {
 }
 
 func (handler *payrollHandler) Detail() {
-	err := helper.ClearTerminal()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = helper.ClearTerminal()
 
 	fmt.Println("Payroll Detail")
 
 	fmt.Print("Payroll ID = ")
-	var payrollID int64
-	fmt.Scanln(&payrollID)
-	if payrollID <= 0 {
+	payrollIDStr, err := handler.Input.Scan()
+	if err != nil {
+		fmt.Println(apperrors.ErrPayrollIdNotValid)
+		return
+	}
+
+	payrollID, err := strconv.ParseInt(strings.TrimSpace(payrollIDStr), 10, 64)
+	if err != nil || payrollID < 0 {
 		fmt.Println(apperrors.ErrPayrollIdNotValid)
 		return
 	}

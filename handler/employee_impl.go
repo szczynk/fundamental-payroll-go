@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/helper/apperrors"
+	"fundamental-payroll-go/helper/input"
 	"fundamental-payroll-go/model"
 	"fundamental-payroll-go/usecase"
 	"strconv"
@@ -12,19 +13,19 @@ import (
 
 type employeeHandler struct {
 	EmployeeUC usecase.EmployeeUsecase
+	Input      *input.InputReader
 }
 
-func NewEmployeeHandler(employeeUC usecase.EmployeeUsecase) EmployeeHandler {
-	return &employeeHandler{
-		EmployeeUC: employeeUC,
-	}
+func NewEmployeeHandler(employeeUC usecase.EmployeeUsecase, input *input.InputReader) EmployeeHandler {
+	h := new(employeeHandler)
+	h.EmployeeUC = employeeUC
+	h.Input = input
+
+	return h
 }
 
 func (handler *employeeHandler) List() {
-	err := helper.ClearTerminal()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = helper.ClearTerminal()
 
 	employees, err := handler.EmployeeUC.List()
 	if err != nil {
@@ -47,39 +48,45 @@ func (handler *employeeHandler) List() {
 }
 
 func (handler *employeeHandler) Add() {
-	err := helper.ClearTerminal()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = helper.ClearTerminal()
 
 	fmt.Println("Add new employee")
 
 	fmt.Print("Name = ")
-	var name string
-	fmt.Scanln(&name)
-	if name == "" {
+	name, err := handler.Input.Scan()
+	if err != nil || name == "" {
 		fmt.Println(apperrors.ErrEmployeeNameNotValid)
 		return
 	}
 
 	fmt.Print("Gender (laki-laki/perempuan) = ")
-	var gender string
-	fmt.Scanln(&gender)
-	gender = strings.ToLower(strings.TrimSpace(gender))
-	if gender == "l" {
-		gender = "laki-laki"
-	} else if gender == "p" {
-		gender = "perempuan"
+	gender, err := handler.Input.Scan()
+	trimmedGender := strings.TrimSpace(gender)
+	if err != nil || trimmedGender == "" {
+		fmt.Println(apperrors.ErrEmployeeGenderNotValid)
+		return
 	}
-	if gender != "laki-laki" && gender != "perempuan" {
+
+	lowerGender := strings.ToLower(trimmedGender)
+	switch lowerGender {
+	case "l", "laki-laki":
+		gender = "laki-laki"
+	case "p", "perempuan":
+		gender = "perempuan"
+	default:
 		fmt.Println(apperrors.ErrEmployeeGenderNotValid)
 		return
 	}
 
 	fmt.Print("Grade = ")
-	var grade int8
-	fmt.Scanln(&grade)
-	if grade <= 0 {
+	gradeStr, err := handler.Input.Scan()
+	if err != nil {
+		fmt.Println(apperrors.ErrEmployeeGradeNotValid)
+		return
+	}
+
+	grade, err := strconv.ParseInt(strings.TrimSpace(gradeStr), 10, 8)
+	if err != nil || grade <= 0 {
 		fmt.Println(apperrors.ErrEmployeeGradeNotValid)
 		return
 	}
@@ -96,7 +103,7 @@ func (handler *employeeHandler) Add() {
 	employeeRequest := &model.EmployeeRequest{
 		Name:    name,
 		Gender:  gender,
-		Grade:   grade,
+		Grade:   int8(grade),
 		Married: married,
 	}
 

@@ -3,24 +3,25 @@ package handler
 import (
 	"fmt"
 	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/input"
 	"fundamental-payroll-go/usecase"
 )
 
 type salaryHandler struct {
 	SalaryUC usecase.SalaryUsecase
+	Input    *input.InputReader
 }
 
-func NewSalaryHandler(salaryUC usecase.SalaryUsecase) SalaryHandler {
-	return &salaryHandler{
-		SalaryUC: salaryUC,
-	}
+func NewSalaryHandler(salaryUC usecase.SalaryUsecase, input *input.InputReader) SalaryHandler {
+	h := new(salaryHandler)
+	h.SalaryUC = salaryUC
+	h.Input = input
+
+	return h
 }
 
 func (handler *salaryHandler) List() {
-	err := helper.ClearTerminal()
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = helper.ClearTerminal()
 
 	salaries, err := handler.SalaryUC.List()
 	if err != nil {

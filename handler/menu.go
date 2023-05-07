@@ -3,12 +3,16 @@ package handler
 import (
 	"fmt"
 	"fundamental-payroll-go/helper"
+	"fundamental-payroll-go/helper/input"
+	"strconv"
+	"strings"
 )
 
 func Menu(
 	employeeHandler EmployeeHandler,
 	payrollHandler PayrollHandler,
 	salaryHandler SalaryHandler,
+	input *input.InputReader,
 ) {
 	err := helper.ClearTerminal()
 	if err != nil {
@@ -18,23 +22,22 @@ func Menu(
 	helper.ShowMenuList()
 
 	for {
-		var menu int
-		fmt.Scanln(&menu)
+		menuStr, _ := input.Scan()
+		menu64, err := strconv.ParseInt(strings.TrimSpace(menuStr), 10, 32)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		menu := int32(menu64)
 
 		if menu == 5 {
-			err := helper.ClearTerminal()
-			if err != nil {
-				fmt.Println(err)
-			}
+			_ = helper.ClearTerminal()
 			break
 		}
 
 		switch menu {
 		default: // case 0 atau selain 0
-			err := helper.ClearTerminal()
-			if err != nil {
-				fmt.Println(err)
-			}
+			_ = helper.ClearTerminal()
 			helper.ShowMenuList()
 		case 1:
 			employeeHandler.Add()
