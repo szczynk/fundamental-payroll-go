@@ -80,7 +80,7 @@ func (handler *employeeHandler) Add() {
 
 	fmt.Print("Grade = ")
 	gradeStr, err := handler.Input.Scan()
-	if err != nil {
+	if err != nil || gradeStr == "" {
 		fmt.Println(apperrors.ErrEmployeeGradeNotValid)
 		return
 	}
@@ -92,11 +92,15 @@ func (handler *employeeHandler) Add() {
 	}
 
 	fmt.Print("Married = ")
-	var marriedStr string
-	fmt.Scanln(&marriedStr)
+	marriedStr, err := handler.Input.Scan()
+	if err != nil || marriedStr == "" {
+		fmt.Println(apperrors.ErrEmployeeMarriedNotValid)
+		return
+	}
+
 	married, err := strconv.ParseBool(marriedStr)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(apperrors.ErrEmployeeMarriedNotValid)
 		return
 	}
 

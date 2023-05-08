@@ -68,7 +68,7 @@ func (handler *payrollHandler) Add() {
 
 	fmt.Print("Employee ID = ")
 	employeeIDStr, err := handler.Input.Scan()
-	if err != nil {
+	if err != nil || employeeIDStr == "" {
 		fmt.Println(apperrors.ErrEmployeeIdNotValid)
 		return
 	}
@@ -81,7 +81,7 @@ func (handler *payrollHandler) Add() {
 
 	fmt.Print("TotalHariMasuk = ")
 	totalHariMasukStr, err := handler.Input.Scan()
-	if err != nil {
+	if err != nil || totalHariMasukStr == "" {
 		fmt.Println(apperrors.ErrPresentDayNotValid)
 		return
 	}
@@ -94,7 +94,7 @@ func (handler *payrollHandler) Add() {
 
 	fmt.Print("TotalHariTidakMasuk = ")
 	totalHariTidakMasukStr, err := handler.Input.Scan()
-	if err != nil {
+	if err != nil || totalHariTidakMasukStr == "" {
 		fmt.Println(apperrors.ErrAbsentDayNotValid)
 		return
 	}

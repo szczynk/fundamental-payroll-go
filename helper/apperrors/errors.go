@@ -9,11 +9,12 @@ const (
 	ErrDbDriverNotFound     = "database driver not found"
 	ErrEnvNotFound          = ".env file not found"
 
-	ErrEmployeeIdNotValid     = "employee id yang dimasukkan tidak valid"
-	ErrEmployeeGradeNotValid  = "invalid employee grade"
-	ErrEmployeeNameNotValid   = "name yang dimasukkan tidak valid"
-	ErrEmployeeGenderNotValid = "gender yang dimasukkan tidak valid"
-	ErrEmployeeNotFound       = "employee not found"
+	ErrEmployeeIdNotValid      = "employee id yang dimasukkan tidak valid"
+	ErrEmployeeGradeNotValid   = "invalid employee grade"
+	ErrEmployeeNameNotValid    = "name yang dimasukkan tidak valid"
+	ErrEmployeeGenderNotValid  = "gender yang dimasukkan tidak valid"
+	ErrEmployeeMarriedNotValid = "married yang dimasukkan tidak valid"
+	ErrEmployeeNotFound        = "employee not found"
 
 	ErrPayrollIdNotValid  = "payroll id yang dimasukkan tidak valid"
 	ErrPresentDayNotValid = "total hari masuk yang dimasukkan tidak valid"
