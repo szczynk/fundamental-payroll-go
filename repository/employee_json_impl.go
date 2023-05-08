@@ -11,9 +11,9 @@ type employeeJsonRepository struct {
 	jsonFile string
 }
 
-func NewEmployeeJsonRepository() EmployeeRepository {
+func NewEmployeeJsonRepository(jsonFilePath string) EmployeeRepository {
 	r := new(employeeJsonRepository)
-	r.jsonFile = "data/employee.json"
+	r.jsonFile = jsonFilePath
 
 	return r
 }

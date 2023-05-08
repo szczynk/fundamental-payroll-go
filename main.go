@@ -72,9 +72,9 @@ func createUsecase(config *config.Config, logger *logger.Logger) (
 			logger.Fatal().Msg(apperrors.ErrDbDriverNotFound)
 		}
 	case "json":
-		employeeRepo = repository.NewEmployeeJsonRepository()
-		payrollRepo = repository.NewPayrollJsonRepository()
-		salaryRepo = repository.NewSalaryJsonRepository()
+		employeeRepo = repository.NewEmployeeJsonRepository("data/employee.json")
+		payrollRepo = repository.NewPayrollJsonRepository("data/payroll.json")
+		salaryRepo = repository.NewSalaryJsonRepository("data/salary.json")
 	default:
 		employeeRepo = repository.NewEmployeeRepository()
 		payrollRepo = repository.NewPayrollRepository()
