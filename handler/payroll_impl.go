@@ -64,8 +64,6 @@ func (handler *payrollHandler) List() {
 func (handler *payrollHandler) Add() {
 	_ = helper.ClearTerminal()
 
-	fmt.Println("Add new payroll")
-
 	fmt.Print("Employee ID = ")
 	employeeIDStr, err := handler.Input.Scan()
 	if err != nil || employeeIDStr == "" {
@@ -159,8 +157,6 @@ func (handler *payrollHandler) Add() {
 
 func (handler *payrollHandler) Detail() {
 	_ = helper.ClearTerminal()
-
-	fmt.Println("Payroll Detail")
 
 	fmt.Print("Payroll ID = ")
 	payrollIDStr, err := handler.Input.Scan()

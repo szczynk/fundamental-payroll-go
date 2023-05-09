@@ -3,28 +3,43 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/helper/input"
 	"strconv"
 	"strings"
 )
 
-func Menu(
-	employeeHandler EmployeeHandler,
-	payrollHandler PayrollHandler,
-	salaryHandler SalaryHandler,
-	input *input.InputReader,
-) {
-	err := helper.ClearTerminal()
+type Menu struct {
+	employeeH    EmployeeHandler
+	payrollH     PayrollHandler
+	salaryH      SalaryHandler
+	i            *input.InputReader
+	clear        func() error
+	showMenuList func()
+}
+
+func NewMenu(employeeHandler EmployeeHandler, payrollHandler PayrollHandler, salaryHandler SalaryHandler, input *input.InputReader, clear func() error, showMenuList func()) *Menu {
+	menu := new(Menu)
+	menu.employeeH = employeeHandler
+	menu.payrollH = payrollHandler
+	menu.salaryH = salaryHandler
+	menu.i = input
+	menu.clear = clear
+	menu.showMenuList = showMenuList
+
+	return menu
+}
+
+func (m *Menu) ShowMenu() error {
+	err := m.clear()
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
-	helper.ShowMenuList()
+	m.showMenuList()
 
 	for {
-		menuStr, _ := input.Scan()
-		menu64, err := strconv.ParseInt(strings.TrimSpace(menuStr), 10, 32)
+		menuStr, _ := m.i.Scan()
+		menu64, err := strconv.ParseInt(strings.TrimSpace(menuStr), 10, 64)
 		if err != nil && !errors.Is(err, strconv.ErrSyntax) {
 			fmt.Println(err)
 			break
@@ -32,26 +47,34 @@ func Menu(
 		menu := int32(menu64)
 
 		if menu == 5 {
-			_ = helper.ClearTerminal()
+			_ = m.clear()
 			break
 		}
 
 		switch menu {
 		default: // case 0 atau selain 0
-			_ = helper.ClearTerminal()
-			helper.ShowMenuList()
+			_ = m.clear
+			m.showMenuList()
 		case 1:
-			employeeHandler.Add()
+			fmt.Println("Add a new employee")
+			m.employeeH.Add()
 		case 2:
-			employeeHandler.List()
+			fmt.Println("Employee list")
+			m.employeeH.List()
 		case 3:
-			payrollHandler.Add()
+			fmt.Println("Add a new payroll")
+			m.payrollH.Add()
 		case 4:
-			salaryHandler.List()
+			fmt.Println("Salary Matrix")
+			m.salaryH.List()
 		case 6:
-			payrollHandler.List()
+			fmt.Println("Payroll list")
+			m.payrollH.List()
 		case 7:
-			payrollHandler.Detail()
+			fmt.Println("Payroll detail")
+			m.payrollH.Detail()
 		}
 	}
+
+	return nil
 }

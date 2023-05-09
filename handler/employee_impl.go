@@ -50,8 +50,6 @@ func (handler *employeeHandler) List() {
 func (handler *employeeHandler) Add() {
 	_ = helper.ClearTerminal()
 
-	fmt.Println("Add new employee")
-
 	fmt.Print("Name = ")
 	name, err := handler.Input.Scan()
 	if err != nil || name == "" {

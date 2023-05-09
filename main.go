@@ -5,6 +5,7 @@ import (
 	"fundamental-payroll-go/config"
 	"fundamental-payroll-go/config/db"
 	"fundamental-payroll-go/handler"
+	"fundamental-payroll-go/helper"
 	"fundamental-payroll-go/helper/apperrors"
 	"fundamental-payroll-go/helper/input"
 	"fundamental-payroll-go/helper/logger"
@@ -37,10 +38,16 @@ func main() {
 		}
 	default:
 		input := input.NewInputReader(os.Stdin)
+
 		employeeHandler := handler.NewEmployeeHandler(employeeUC, input)
 		salaryHandler := handler.NewSalaryHandler(salaryUC, input)
 		payrollHandler := handler.NewPayrollHandler(payrollUC, input)
-		handler.Menu(employeeHandler, payrollHandler, salaryHandler, input)
+
+		menu := handler.NewMenu(employeeHandler, payrollHandler, salaryHandler, input, helper.ClearTerminal, helper.ShowMenuList)
+		err := menu.ShowMenu()
+		if err != nil {
+			l.Fatal().Err(err).Msg("server fail to start")
+		}
 	}
 }
 

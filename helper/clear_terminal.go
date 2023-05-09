@@ -8,22 +8,15 @@ import (
 )
 
 func ClearTerminal() error {
-	var err error
+	var cmd *exec.Cmd
 	switch runtime.GOOS {
-	case "linux":
-		cmd := exec.Command("clear") //Linux example, its tested
-		cmd.Stdout = os.Stdout
-		err = cmd.Run()
-	case "darwin":
-		cmd := exec.Command("clear") //Linux example, its tested
-		cmd.Stdout = os.Stdout
-		err = cmd.Run()
+	case "linux", "darwin":
+		cmd = exec.Command("clear") // Linux and MacOS example, its tested
 	case "windows":
-		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
-		cmd.Stdout = os.Stdout
-		err = cmd.Run()
+		cmd = exec.Command("cmd", "/c", "cls") //Windows example, its tested
 	default:
-		err = apperrors.New(apperrors.ErrPlatformNotSupported)
+		return apperrors.New(apperrors.ErrPlatformNotSupported)
 	}
-	return err
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
 }

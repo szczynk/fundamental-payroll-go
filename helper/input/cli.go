@@ -20,7 +20,6 @@ func NewInputReader(input io.Reader) *InputReader {
 }
 
 func (r *InputReader) Scan() (string, error) {
-
 	var input string
 	if r.scanner.Scan() {
 		input = r.scanner.Text()
