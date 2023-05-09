@@ -1,3 +1,4 @@
+//go:generate mockery --output=../mocks --name PayrollHandler
 package handler
 
 type PayrollHandler interface {
